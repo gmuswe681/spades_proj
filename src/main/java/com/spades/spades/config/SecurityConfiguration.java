@@ -56,6 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 return s.equals(encode(charSequence));
             }
         };
-        //return NoOpPasswordEncoder.getInstance();
     }
 }
+
+
