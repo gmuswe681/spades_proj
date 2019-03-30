@@ -36,7 +36,7 @@ public class CreateUserController {
         {
             message = "A field wasn't specified";
         }
-        else if (userName.length() <= 5 || password.length() <= 7)
+        else if (userName.length() <= 4 || password.length() <= 7)
         {
             message = "Username or password is too short.";
         }
