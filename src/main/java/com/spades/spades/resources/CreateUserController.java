@@ -1,5 +1,7 @@
 package com.spades.spades.resources;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,22 +23,41 @@ public class CreateUserController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public String submitUser(HttpServletRequest hReq) {
-        String firstName = hReq.getParameter("firstname");
+        String userName = hReq.getParameter("username");
         String lastName = hReq.getParameter("lastname");
-        String email = hReq.getParameter("user");
+        String email = hReq.getParameter("email");
         String password = hReq.getParameter("password");
 
-        if ((firstName == null) || (lastName == null) || (email == null) || (password == null))
-        {
-            return "A field wasn't specified";
-        }
+        String message = "";
 
-        Users newUser = new Users();
-        newUser.setName(firstName);
-        newUser.setLastName(lastName);
-        newUser.setEmail(email);
-        newUser.setPassword(password);
-        repository.save(newUser);
-        return "user was entered: " + firstName + ", " + password + ", Human name is " + firstName + " " + lastName;
+        if ((userName == null) || (lastName == null) || (email == null) || (password == null))
+        {
+            message = "A field wasn't specified";
+        }
+        else if (userName.length() <= 5 || password.length() <= 7)
+        {
+            message = "Username or password is too short.";
+        }
+        else
+        {
+            PasswordEncoder pEncoder = new BCryptPasswordEncoder();
+
+            Users newUser = new Users();
+            newUser.setName(userName);
+            newUser.setLastName(lastName);
+            newUser.setEmail(email);
+            newUser.setPassword("{bcrypt}" + pEncoder.encode(password));
+            newUser.setActive(1);
+            repository.save(newUser);
+            message = "User was successfully created.";
+        }
+        String result = "<html>\n";
+        result += "<head></head>\n";
+        result += "<body>\n";
+        result += "<p>" + message + "</p>\n";
+        result += "<a href=\"/\">Go to Homepage</a>\n";
+        result += "</body>\n";
+        result += "</html>";
+        return result;
     }
 }

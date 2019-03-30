@@ -1,5 +1,7 @@
 package com.spades.spades.config;
 
+import java.util.*;
+
 import com.spades.spades.repository.UsersRepository;
 import com.spades.spades.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -42,19 +46,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     private PasswordEncoder getPasswordEncoder() {
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence charSequence) {
-                return charSequence.toString();
-            }
-
-            @Override
-            public boolean matches(CharSequence charSequence, String s) {
-                if(s == null || charSequence == null)
-                    return false;
-                return s.equals(encode(charSequence));
-            }
-        };
+        String encodingId = "bcrypt";
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put(encodingId, new BCryptPasswordEncoder());
+		encoders.put(null, org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
+		return new DelegatingPasswordEncoder(encodingId, encoders);
     }
 }
 
