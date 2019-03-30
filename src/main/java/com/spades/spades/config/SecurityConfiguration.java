@@ -49,8 +49,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         String encodingId = "bcrypt";
 		Map<String, PasswordEncoder> encoders = new HashMap<>();
         encoders.put(encodingId, new BCryptPasswordEncoder());
-		encoders.put(null, org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
-		return new DelegatingPasswordEncoder(encodingId, encoders);
+        
+        DelegatingPasswordEncoder encoder = new DelegatingPasswordEncoder(encodingId, encoders);
+        encoder.setDefaultPasswordEncoderForMatches(new BCryptPasswordEncoder());
+        return encoder;
     }
 }
 

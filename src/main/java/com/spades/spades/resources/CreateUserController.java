@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.spades.spades.model.Users;
@@ -38,6 +40,10 @@ public class CreateUserController {
         {
             message = "Username or password is too short.";
         }
+        else if(checkExistingUsers(userName))
+        {
+            message = "User already exists. Pick another username please.";
+        }
         else
         {
             PasswordEncoder pEncoder = new BCryptPasswordEncoder();
@@ -59,5 +65,21 @@ public class CreateUserController {
         result += "</body>\n";
         result += "</html>";
         return result;
+    }
+
+    /****
+     * Uses the existing password repository to get 
+     ****/
+    private boolean checkExistingUsers(String name)
+    {
+        Optional<Users> listUser = repository.findByName(name);
+
+        // User wasn't found
+        if(!listUser.isPresent())
+        {
+            return false;
+        }
+
+        return true;
     }
 }
