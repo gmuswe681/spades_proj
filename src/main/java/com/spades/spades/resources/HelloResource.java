@@ -16,6 +16,7 @@ public class HelloResource {
         result += "<body>\n";
         result += "<p>Hello World!</p>\n";
         result += "<a href=\"/secured/all\">Login</a>\n";
+        result += "<a href=\"/createuserpage.html\">Create User</a>\n";
         result += "</body>\n";
         result += "</html>";
         return result;
