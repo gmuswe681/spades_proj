@@ -1,0 +1,1 @@
+2019-04-07 13:48:36.003 ERROR 4144 --- [https-jsse-nio-8443-exec-8] c.s.s.resources.CreateUserController     : User already exists. Pick another username please.

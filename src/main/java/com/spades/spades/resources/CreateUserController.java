@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +23,7 @@ import com.spades.spades.repository.UsersRepository;
 public class CreateUserController {
 
     private final UsersRepository repository;
+    private static final Logger LOGGER = LogManager.getLogger(this.getClass());
 
     CreateUserController(UsersRepository repository) {
         this.repository = repository;
@@ -43,12 +49,16 @@ public class CreateUserController {
         else if(checkExistingUsers(userName))
         {
             message = "User already exists. Pick another username please.";
+            LOGGER.error(message);
         }
         else
         {
             PasswordEncoder pEncoder = new BCryptPasswordEncoder();
 
             Users newUser = new Users();
+
+
+
             newUser.setName(userName);
             newUser.setLastName(lastName);
             newUser.setEmail(email);
