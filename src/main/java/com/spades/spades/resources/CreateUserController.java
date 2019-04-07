@@ -23,7 +23,7 @@ import com.spades.spades.repository.UsersRepository;
 public class CreateUserController {
 
     private final UsersRepository repository;
-    private static final Logger LOGGER = LogManager.getLogger(this.getClass());
+    private static final Logger LOGGER = LogManager.getLogger("CreateUserController.class");
 
     CreateUserController(UsersRepository repository) {
         this.repository = repository;
