@@ -11,11 +11,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.spades.spades.model.Users;
+import com.spades.spades.model.Role;
 import com.spades.spades.repository.UsersRepository;
 
 @RequestMapping("/createuser")
@@ -64,6 +67,14 @@ public class CreateUserController {
             newUser.setEmail(email);
             newUser.setPassword("{bcrypt}" + pEncoder.encode(password));
             newUser.setActive(1);
+
+            Set<Role> roles = new HashSet<Role>();
+            Role r = new Role();
+            r.setRole("USER");
+            r.setRoleId(2);
+            roles.add(r);
+            newUser.setRoles(roles);
+
             repository.save(newUser);
             message = "User was successfully created.";
         }

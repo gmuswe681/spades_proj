@@ -22,7 +22,7 @@ public class HelloResource {
         return result;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/secured/all")
     public String securedHello()
     {
@@ -36,7 +36,7 @@ public class HelloResource {
         return result;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/secured/alternate")
     public String alternate() {
         String result = "<html>\n";
