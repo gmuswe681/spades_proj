@@ -1,7 +1,5 @@
 package com.spades.spades;
 
-import org.apache.catalina.User;
-
 import java.util.Collections;
 import java.util.Stack;
 
