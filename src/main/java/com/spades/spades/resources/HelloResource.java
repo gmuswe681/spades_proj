@@ -14,7 +14,7 @@ public class HelloResource {
         String result = "<html>\n";
         result += "<head></head>\n";
         result += "<body>\n";
-        result += "<p>Hello World!</p>\n";
+        result += "<p>Welcome to Spades. Please Crete a User or Login.</p>\n";
         result += "<a href=\"/secured/all\">Login</a>\n";
         result += "<a href=\"/createuserpage.html\">Create User</a>\n";
         result += "</body>\n";
