@@ -41,4 +41,8 @@ public class Deck {
         deck.pop();
     }
 
+    public Integer getDeckLength(){
+        return deck.size();
+    }
+
 }
