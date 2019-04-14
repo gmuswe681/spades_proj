@@ -23,8 +23,6 @@ public class Hand {
         hand.add(card);
     }
 
-
-
     public void removeFromHand(String card){
         hand.remove(card);
     }
