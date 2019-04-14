@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,6 +29,8 @@ public class CreateUserController {
 
     private final UsersRepository repository;
     private static final Logger LOGGER = LogManager.getLogger("CreateUserController.class");
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
     CreateUserController(UsersRepository repository) {
         this.repository = repository;
@@ -38,24 +42,14 @@ public class CreateUserController {
         String lastName = hReq.getParameter("lastname");
         String email = hReq.getParameter("email");
         String password = hReq.getParameter("password");
+        StringBuffer message = new StringBuffer();
 
-        String message = "";
+        if (validateUser(userName, lastName, email, password).length() > 0){
+            message.append("<ul>");
+            message = validateUser(userName, lastName, email, password);
+            message.append("</ul>");
+        } else {
 
-        if ((userName == null) || (lastName == null) || (email == null) || (password == null))
-        {
-            message = "A field wasn't specified";
-        }
-        else if (userName.length() <= 4 || password.length() <= 7)
-        {
-            message = "Username or password is too short.";
-        }
-        else if(checkExistingUsers(userName))
-        {
-            message = "User already exists. Pick another username please.";
-            LOGGER.error(message);
-        }
-        else
-        {
             PasswordEncoder pEncoder = new BCryptPasswordEncoder();
 
             Users newUser = new Users();
@@ -76,7 +70,7 @@ public class CreateUserController {
             newUser.setRoles(roles);
 
             repository.save(newUser);
-            message = "User was successfully created.";
+            message.append("User was successfully created.");
         }
         String result = "<html>\n";
         result += "<head></head>\n";
@@ -102,5 +96,74 @@ public class CreateUserController {
         }
 
         return true;
+    }
+
+    private StringBuffer validateUser(String userName, String lastName, String email, String password){
+
+        StringBuffer errorMessage = new StringBuffer();
+        String message = "";
+        if(isNull(userName) == true){
+            message = "User Name is Null.";
+            appendMessage(errorMessage, message);
+        }
+        if(isNull(password) == true){
+            message = "Password is Null.";
+            appendMessage(errorMessage, message);
+        }
+        if(isNull(lastName)== true){
+            message = "Lastname is Null.";
+            appendMessage(errorMessage, message);
+        }
+        if (isNull(password)){
+            message = "Password is Null.";
+            appendMessage(errorMessage, message);
+        }
+        if (userName.length() <= 4)
+        {
+            message = "Username is too short.";
+            appendMessage(errorMessage, message);
+        }
+        if (userName.length() >= 55){
+            message = "Username is too long";
+            appendMessage(errorMessage, message);
+        }
+        if (password.length() <= 4)
+        {
+            message = "Password is too short.";
+            appendMessage(errorMessage, message);
+        }
+        if (password.length() >= 55){
+            message = "Password is too long";
+            appendMessage(errorMessage, message);
+        }
+        if (checkEmail(email) == false){
+            message = "Please enter a valid email address.";
+            appendMessage(errorMessage, message);
+        }
+        if(checkExistingUsers(userName))
+        {
+            message = "User already exists. Pick another username please.";
+            appendMessage(errorMessage, message);
+        }
+         return errorMessage;
+    }
+
+    private void appendMessage(StringBuffer errorMessage, String message) {
+        LOGGER.error(message);
+        errorMessage.append("<li>" + message);
+    }
+
+    private boolean isNull(String field){
+        if(field == null | field.length() == 0){
+            return true;
+        } else {
+            return false;
+        }
+     }
+
+
+    private boolean checkEmail(String email){
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX .matcher(email);
+        return matcher.find();
     }
 }
