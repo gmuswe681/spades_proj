@@ -33,11 +33,11 @@ public class Deck {
         Collections.shuffle(deck);
     }
 
-    private String drawCard(){
+    public String drawCard(){
         return deck.peek();
     }
 
-    private void keepOrReturnCard(){
+    public void keepOrReturnCard(){
         deck.pop();
     }
 
