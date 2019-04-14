@@ -30,4 +30,4 @@ HELP.md
 
 
 ### Log Files ###
-logs/
+/logs/*.log
