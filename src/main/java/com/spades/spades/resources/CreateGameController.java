@@ -4,6 +4,7 @@ import com.spades.spades.model.Games;
 import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.repository.UsersRepository;
+import com.spades.spades.service.GenerateGameIdService;
 import com.spades.spades.service.GetAuthenticationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class CreateGameController {
 
     @Autowired
     private GetAuthenticationService authService;
+
+    @Autowired
+    private GenerateGameIdService gameIdService;
 
 
     private final GamesRepository gamesRepository;
@@ -73,6 +77,9 @@ public class CreateGameController {
     private void createGameInDatabase(int playerID)
     {
         Games g = new Games();
+        int newId = gameIdService.getNewGameId();
+
+        g.setGameId(newId);
         g.setPlayer1Id(playerID);
         g.setGameStatus("o");
         g.setPointsToWin(100);

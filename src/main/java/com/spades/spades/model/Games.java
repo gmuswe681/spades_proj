@@ -8,7 +8,6 @@ import java.util.Set;
 @Table(name = "games", schema = "public")
 public class Games {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "game_id")
     private Integer gameId;
     @Column(name = "player1_id")
@@ -23,9 +22,6 @@ public class Games {
     private Integer winnerId;
 
 
-    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "user", joinColumns = @JoinColumn(name = "user_id"))
-    private Set<Users> users;
 
     public Games(){}
 
@@ -34,7 +30,6 @@ public class Games {
         this.player2Id = games.getPlayer2Id();
         this.gameStatus = games.getGameStatus();
         this.winnerId = games.getWinnerId();
-        this.users = games.getUsers();
         this.pointsToWin = games.getPointsToWin();
     }
 
@@ -86,13 +81,5 @@ public class Games {
 
     public void setWinnerId(Integer winnerId) {
         this.winnerId = winnerId;
-    }
-
-    public Set<Users> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<Users> users) {
-        this.users = users;
     }
 }
