@@ -1,5 +1,10 @@
 package com.spades.spades;
 
+import org.apache.catalina.User;
+
+import java.util.Collections;
+import java.util.Stack;
+
 public class Deck {
 
     private final static String[] SUITS = {
@@ -11,26 +16,31 @@ public class Deck {
             "Jack", "Queen", "King", "Ace"
     };
 
+    private Stack<String> deck = new Stack<String>();
+
     private final static int n = SUITS.length * RANKS.length;
 
     public Deck() {
-        String[] deck = new String[n];
+        String card;
         for (int i = 0; i < RANKS.length; i++) {
             for (int j = 0; j < SUITS.length; j++) {
-                deck[SUITS.length * i + j] = RANKS[i] + " of " + SUITS[j];
+                card = RANKS[i] + " of " + SUITS[j];
+                deck.push(card);
             }
         }
 
     }
 
-    public void Shuffle(String[] deck){
-        // shuffle
-        for (int i = 0; i < n; i++) {
-            int r = i + (int) (Math.random() * (n - i));
-            String temp = deck[r];
-            deck[r] = deck[i];
-            deck[i] = temp;
-        }
+    public void shuffle(){
+        Collections.shuffle(deck);
+    }
+
+    private String drawCard(){
+        return deck.peek();
+    }
+
+    private void keepOrReturnCard(){
+        deck.pop();
     }
 
 }
