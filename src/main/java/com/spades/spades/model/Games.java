@@ -10,15 +10,17 @@ public class Games {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "game_id")
-    private int gameId;
+    private Integer gameId;
     @Column(name = "player1_id")
-    private int player1Id;
-    @Column(name = "player_2")
-    private int player2Id;
+    private Integer player1Id;
+    @Column(name = "player2_id")
+    private Integer player2Id;
     @Column(name = "game_status")
     private String gameStatus;
+    @Column(name = "points_to_win")
+    private int pointsToWin;
     @Column(name = "winner_id")
-    private int winnerId;
+    private Integer winnerId;
 
 
     @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
@@ -33,29 +35,30 @@ public class Games {
         this.gameStatus = games.getGameStatus();
         this.winnerId = games.getWinnerId();
         this.users = games.getUsers();
+        this.pointsToWin = games.getPointsToWin();
     }
 
-    public int getGameId() {
+    public Integer getGameId() {
         return gameId;
     }
 
-    public void setGameId(int gameId) {
+    public void setGameId(Integer gameId) {
         this.gameId = gameId;
     }
 
-    public int getPlayer1Id() {
+    public Integer getPlayer1Id() {
         return player1Id;
     }
 
-    public void setPlayer1Id(int player1Id) {
+    public void setPlayer1Id(Integer player1Id) {
         this.player1Id = player1Id;
     }
 
-    public int getPlayer2Id() {
+    public Integer getPlayer2Id() {
         return player2Id;
     }
 
-    public void setPlayer2Id(int player2Id) {
+    public void setPlayer2Id(Integer player2Id) {
         this.player2Id = player2Id;
     }
 
@@ -67,11 +70,21 @@ public class Games {
         this.gameStatus = gameStatus;
     }
 
-    public int getWinnerId() {
+    public int getPointsToWin()
+    {
+        return pointsToWin;
+    }
+
+    public void setPointsToWin(int pointsToWin)
+    {
+        this.pointsToWin = pointsToWin;
+    }
+
+    public Integer getWinnerId() {
         return winnerId;
     }
 
-    public void setWinnerId(int winnerId) {
+    public void setWinnerId(Integer winnerId) {
         this.winnerId = winnerId;
     }
 

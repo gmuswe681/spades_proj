@@ -30,19 +30,9 @@ public class HelloResource {
         result += "<head></head>\n";
         result += "<body>\n";
         result += "<p>Secured Hello!</p>\n";
-        result += "<a href=\"/logout\">Logout</a>\n";
-        result += "</body>\n";
-        result += "</html>";
-        return result;
-    }
 
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/secured/alternate")
-    public String alternate() {
-        String result = "<html>\n";
-        result += "<head></head>\n";
-        result += "<body>\n";
-        result += "<p>Alternate</p>\n";
+        result += "<form><button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/creategame\">Create Game</button></form>";
+
         result += "<a href=\"/logout\">Logout</a>\n";
         result += "</body>\n";
         result += "</html>";
