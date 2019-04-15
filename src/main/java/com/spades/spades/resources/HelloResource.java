@@ -34,6 +34,7 @@ public class HelloResource {
         result += "<p>Secured Hello!</p>\n";
 
         result += "<form><button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/creategame\">Create Game</button></form>";
+        result += "<form><button type=\"submit\" formmethod=\"get\" formaction=\"/secured/all/retrieveopengames/\">Find Games</button></form>";
 
         result += "<a href=\"/logout\">Logout</a>\n";
         result += "</body>\n";

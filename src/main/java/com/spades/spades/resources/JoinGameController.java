@@ -18,25 +18,25 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
+import java.security.cert.PKIXRevocationChecker.Option;
 import java.util.Optional;
 
-@RequestMapping("/secured/all/creategame")
+@RequestMapping("/secured/all/joingame")
 @RestController
-public class CreateGameController {
+public class JoinGameController {
 
     @Autowired
     private GetAuthenticationService authService;
-
-    @Autowired
-    private GenerateGameIdService gameIdService;
 
 
     private final GamesRepository gamesRepository;
     private final UsersRepository usersRepository;
 
-    private static final Logger LOGGER = LogManager.getLogger("CreateGameController.class");
+    private static final Logger LOGGER = LogManager.getLogger("JoinGameController.class");
 
-    CreateGameController(GamesRepository g, UsersRepository u)
+    JoinGameController(GamesRepository g, UsersRepository u)
     {
         gamesRepository = g;
         usersRepository = u;
@@ -44,17 +44,42 @@ public class CreateGameController {
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public String createGame()
+    public String joinGame(HttpServletRequest req)
     {
-        int playerID1 = findPlayerID();
-        if(playerID1 >= 0)
+        int gameId = Integer.parseInt(req.getParameter("game_id"));
+        int playerID2 = findPlayerID();
+        if(playerID2 >= 0)
         {
-            createGameInDatabase(playerID1);
-            return generateHtmlResponse("game was created");
+            joinGameInDatabase(gameId, playerID2);
+            return generateHtmlResponse("game was joined");
         }
         else
         {
             return generateHtmlResponse("Unable to create game.");
+        }
+    }
+
+    private void joinGameInDatabase(int gameId, int playerId)
+    {
+        Optional<Games> foundGame = gamesRepository.findByGameId(gameId);
+        if(foundGame.isPresent())
+        {
+            Games g = foundGame.get();
+            if(g.getPlayer2Id() == null)
+            {
+                g.setPlayer2Id(playerId);
+                g.setGameStatus("a");
+                gamesRepository.save(g);
+                LOGGER.info("Joined game id = " + gameId);
+            }
+            else
+            {
+                LOGGER.error("Game is full");
+            }
+        }
+        else
+        {
+            LOGGER.error("Attempted to join non-existent game");
         }
     }
 
@@ -72,20 +97,6 @@ public class CreateGameController {
         }
 
         return -1;
-    }
-
-    private void createGameInDatabase(int playerID)
-    {
-        Games g = new Games();
-        int newId = gameIdService.getNewGameId();
-
-        g.setGameId(newId);
-        g.setPlayer1Id(playerID);
-        g.setGameStatus("o");
-        g.setPointsToWin(100);
-        gamesRepository.save(g);
-
-        LOGGER.info("game created with id =" + newId);
     }
 
     private String generateHtmlResponse(String s)
