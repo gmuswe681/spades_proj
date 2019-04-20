@@ -3,10 +3,11 @@ package com.spades.spades.model;
 import javax.persistence.*;
 import java.util.Set;
 
+@Entity
+@Table(name = "rounds", schema = "public")
 public class Rounds {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "round_number")
     private int roundNumber;
     @Column(name = "game_id")
