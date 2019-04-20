@@ -1,5 +1,6 @@
 package com.spades.spades.resources;
 
+import com.spades.spades.TimeOut;
 import com.spades.spades.model.Games;
 import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Time;
 import java.util.Optional;
 
 @RequestMapping("/secured/all/game")
@@ -40,6 +42,7 @@ public class ActiveGameController {
     {
         gamesRepository = g;
         usersRepository = u;
+
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
@@ -47,38 +50,60 @@ public class ActiveGameController {
     public String updateGame(@PathVariable int gameid)
     {
         Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
+        TimeOut timer = new TimeOut("game", 10000L);
         if(foundGame.isPresent())
         {
             Games currGame = foundGame.get();
             if(currGame.getGameStatus().equals("o"))
             {
-                LOGGER.debug("This game is waiting for players.");
-                return generateHtmlResponse("Waiting for a player to join. Refresh the page.");
+                if(timer.getMessage() == "running"){
+                    return getResponse("This game is waiting for players.", "Waiting for a player to join. Refresh the page.");
+                } else {
+                   return getResponse(timer.getMessage(), timer.getMessage());
+                }
+
             }
 
             if(!currGame.getGameStatus().equals("a"))
             {
-                LOGGER.debug("This game is not active.");
-                return generateHtmlResponse("Invalid");
+                if(timer.getMessage() == "running") {
+                    return getResponse("This game is not active.", "Invalid");
+                } else {
+                    return getResponse(timer.getMessage(), timer.getMessage());
+                }
             }
 
             int playerId = findPlayerID();
             if(playerId == currGame.getPlayer1Id() || playerId == currGame.getPlayer2Id())
             {
                 String response = spadesService.progressGame(gameid, playerId);
+                timer.cancelTimeout();
                 return generateHtmlResponse(response);
             }
             else
             {
-                LOGGER.debug("This user is not part of this game.");
-                return generateHtmlResponse("Invalid");
+                if(timer.getMessage() == "running") {
+                    return getResponse("This user is not part of this game.", "Invalid");
+                } else {
+                    return getResponse(timer.getMessage(), timer.getMessage());
+                }
+
             }
         }
         else
         {
-            LOGGER.debug("Game ID not found");
-            return generateHtmlResponse("Invalid");
+            if(timer.getMessage() == "running"){
+                return getResponse("Game ID not found", "Invalid");
+            }   else {
+                return getResponse(timer.getMessage(), timer.getMessage());
+            }
+
         }
+    }
+
+    private String getResponse(String logResponse, String htmlResponse) {
+        LOGGER.debug(logResponse);
+        return generateHtmlResponse(htmlResponse);
     }
 
     private int findPlayerID()

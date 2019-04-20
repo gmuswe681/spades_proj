@@ -2,25 +2,17 @@ package com.spades.spades;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class TimeOut {
     private static final Logger LOGGER = LogManager.getLogger("TimeOut.class");
+    private Timer timer = new Timer("Timer");
+    private String message;
+    public TimeOut(String handOrGame, Long delay) {
 
-
-
-
-
-    public TimeOut(String handOrGame, String pageRedirect) {
-
-
+    message = "";
     TimerTask task = new TimerTask() {
         public void run() {
             LOGGER.error(handOrGame + " has timed out.");
@@ -32,23 +24,30 @@ public class TimeOut {
 
         }
     };
-    Timer timer = new Timer("Timer");
 
-    long delay =  1000L;
+
+
     timer.schedule(task,delay);
 
 
 }
 
+    public void cancelTimeout(){
+        timer.cancel();
+    }
+
+    public String getMessage(){
+        if (message == ""){
+            return "running";
+        } else {
+           return gameTimeout();
+        }
+    }
+
     private String gameTimeout() {
-        String result = "<html>\n";
-        result += "<head></head>\n";
-        result += "<body>\n";
-        result += "<p>Your game has timed out waiting on a second player, please go back to the main menu</p>\n";
-        result += "<a href='./secured/all'>Home</a>";
-        result += "</body>\n";
-        result += "</html>";
-        return result;
+        message = "<p>Your game has timed out waiting on a second player, please go back to the main menu</p>\n";
+        message += "<a href='./secured/all'>Home</a>";
+        return message;
     }
 
     private String handTimeOut(){
