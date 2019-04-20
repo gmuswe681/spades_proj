@@ -1,7 +1,6 @@
 package com.spades.spades.model;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "rounds", schema = "public")
@@ -25,14 +24,6 @@ public class Rounds {
     @Column(name = "player2_actual")
     private int player2Actual;
 
-    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "games", joinColumns = @JoinColumn(name = "game_id"))
-    private Set<Games> games;
-
-    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "user", joinColumns = @JoinColumn(name = "user_id"))
-    private Set<Users> users;
-
     public Rounds(){}
 
     public Rounds(Rounds rounds) {
@@ -43,8 +34,6 @@ public class Rounds {
         this.player2Bid = rounds.getPlayer2Bid();
         this.player1Actual = rounds.getPlayer1Actual();
         this.player2Actual = rounds.getPlayer2Actual();
-        this.games = rounds.getGames();
-        this.users = rounds.getUsers();
     }
 
     public int getRoundNumber() {
@@ -111,19 +100,4 @@ public class Rounds {
         this.player2Actual = player2Actual;
     }
 
-    public Set<Games> getGames() {
-        return games;
-    }
-
-    public void setGames(Set<Games> games) {
-        this.games = games;
-    }
-
-    public Set<Users> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<Users> users) {
-        this.users = users;
-    }
 }
