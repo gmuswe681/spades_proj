@@ -65,7 +65,7 @@ public class ActiveGameController {
             int playerId = findPlayerID();
             if(playerId == currGame.getPlayer1Id() || playerId == currGame.getPlayer2Id())
             {
-                String response = spadesService.progressGame(gameid);
+                String response = spadesService.progressGame(gameid, playerId);
                 return generateHtmlResponse(response);
             }
             else
