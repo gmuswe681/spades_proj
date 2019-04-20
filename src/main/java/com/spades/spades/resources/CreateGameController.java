@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequestMapping("/secured/all/creategame")
@@ -47,15 +48,29 @@ public class CreateGameController {
     public String createGame()
     {
         int playerID1 = findPlayerID();
+        String response = "";
+
         if(playerID1 >= 0)
         {
-            createGameInDatabase(playerID1);
-            return generateHtmlResponse("game was created");
+            if(checkUserNotInOpenGames(playerID1))
+            {
+                int gameId = createGameInDatabase(playerID1);
+                response = "<p>Game was created.</p>\n";
+                response += "<a href=\"/secured/all/game/" + gameId + "\">Go to new game</a>\n";
+            }
+            else
+            {
+                response = "<p>Finish your current game first.</p>\n";
+                response += "<a href=\"/secured/all\">Go Back</a>\n";
+            }
         }
         else
         {
-            return generateHtmlResponse("Unable to create game.");
+            response = "<p>Unable to create game.</p><br/>\n";
+            response += "<a href=\"/secured/all\">Go Back</a>\n";
         }
+
+        return generateHtmlResponse(response);
     }
 
     private int findPlayerID()
@@ -74,7 +89,7 @@ public class CreateGameController {
         return -1;
     }
 
-    private void createGameInDatabase(int playerID)
+    private int createGameInDatabase(int playerID)
     {
         Games g = new Games();
         int newId = gameIdService.getNewGameId();
@@ -86,6 +101,18 @@ public class CreateGameController {
         gamesRepository.save(g);
 
         LOGGER.info("game created with id =" + newId);
+
+        return newId;
+    }
+
+    private boolean checkUserNotInOpenGames(int userId)
+    {
+        List<Games> openGames = gamesRepository.findOpenGamesForUser(userId);
+        if(openGames.size() == 0)
+        {
+            return true;
+        }
+        return false;
     }
 
     private String generateHtmlResponse(String s)
@@ -96,7 +123,6 @@ public class CreateGameController {
 
         result += s + "\n";
 
-        result += "<a href=\"/secured/all\">Go Back</a>\n";
         result += "</body>\n";
         result += "</html>";
         return result;
