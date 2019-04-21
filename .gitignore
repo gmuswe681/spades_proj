@@ -31,3 +31,4 @@ HELP.md
 
 ### Log Files ###
 /logs/*.log
+/logs/*.gz
