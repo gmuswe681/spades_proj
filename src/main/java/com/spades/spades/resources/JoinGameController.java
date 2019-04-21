@@ -4,7 +4,6 @@ import com.spades.spades.model.Games;
 import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.repository.UsersRepository;
-import com.spades.spades.service.GenerateGameIdService;
 import com.spades.spades.service.GetAuthenticationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import java.security.cert.PKIXRevocationChecker.Option;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Optional;
 
 @RequestMapping("/secured/all/joingame")
@@ -44,33 +45,54 @@ public class JoinGameController {
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public String joinGame(HttpServletRequest req)
+    public void joinGame(HttpServletRequest req, HttpServletResponse resp)
+        throws IOException
     {
         int gameId = Integer.parseInt(req.getParameter("game_id"));
         int playerID2 = findPlayerID();
         if(playerID2 >= 0)
         {
-            joinGameInDatabase(gameId, playerID2);
-            return generateHtmlResponse("game was joined");
+            if(gamesRepository.findOpenGamesForUser(playerID2).size() != 0)
+            {
+                generateHtmlResponse(resp, "<p>Finish the games you are currently in first.</p>");
+                return;
+            }
+            
+            if(joinGameInDatabase(gameId, playerID2))
+            {
+                String gameURL = "/secured/all/game/" + gameId;
+                resp.sendRedirect(gameURL);
+            }
+            else
+            {
+                generateHtmlResponse(resp, "<p>Something went wrong when trying to join the game.</p>");
+            }
+            return;
         }
-        else
-        {
-            return generateHtmlResponse("Unable to create game.");
-        }
+
+        generateHtmlResponse(resp, "<p>Something went wrong when trying to join the game.</p>");
     }
 
-    private void joinGameInDatabase(int gameId, int playerId)
+    private boolean joinGameInDatabase(int gameId, int playerId)
     {
         Optional<Games> foundGame = gamesRepository.findByGameId(gameId);
         if(foundGame.isPresent())
         {
             Games g = foundGame.get();
+
+            if(playerId == g.getPlayer1Id())
+            {
+                LOGGER.error("Player attempted to join own game.");
+                return false;
+            }
+
             if(g.getPlayer2Id() == null)
             {
                 g.setPlayer2Id(playerId);
                 g.setGameStatus("a");
                 gamesRepository.save(g);
-                LOGGER.info("Joined game id = " + gameId);
+                LOGGER.debug("Joined game id = " + gameId);
+                return true;
             }
             else
             {
@@ -81,6 +103,8 @@ public class JoinGameController {
         {
             LOGGER.error("Attempted to join non-existent game");
         }
+
+        return false;
     }
 
     private int findPlayerID()
@@ -99,7 +123,8 @@ public class JoinGameController {
         return -1;
     }
 
-    private String generateHtmlResponse(String s)
+    private void generateHtmlResponse(HttpServletResponse resp, String s)
+        throws IOException
     {
         String result = "<html>\n";
         result += "<head></head>\n";
@@ -110,6 +135,9 @@ public class JoinGameController {
         result += "<a href=\"/secured/all\">Go Back</a>\n";
         result += "</body>\n";
         result += "</html>";
-        return result;
+        
+        PrintWriter out = resp.getWriter();
+        out.println(result);
+        out.flush();
     }
 }
