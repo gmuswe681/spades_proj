@@ -3,7 +3,6 @@ package com.spades.spades.resources;
 import com.spades.spades.GameTimeOut;
 import com.spades.spades.model.Games;
 import com.spades.spades.repository.GamesRepository;
-import com.spades.spades.repository.UsersRepository;
 import com.spades.spades.service.GameTimerService;
 import com.spades.spades.service.GenerateGameIdService;
 import com.spades.spades.service.GetCurrentPlayerInfoService;
@@ -34,16 +33,13 @@ public class CreateGameController {
     private GameTimerService gameTimerService;
 
     private final GamesRepository gamesRepository;
-    private final UsersRepository usersRepository;
-
 
 
     private static final Logger LOGGER = LogManager.getLogger("CreateGameController.class");
 
-    CreateGameController(GamesRepository g, UsersRepository u)
+    CreateGameController(GamesRepository g)
     {
         gamesRepository = g;
-        usersRepository = u;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")

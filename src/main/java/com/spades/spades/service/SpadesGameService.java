@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,7 +31,6 @@ public class SpadesGameService {
     @Autowired
     private GetCurrentPlayerInfoService currentPlayerInfoService;
 
-    private static final Logger LOGGER = LogManager.getLogger("SpadesGameService.class");
 
     public SpadesGameService()
     {
@@ -80,6 +76,7 @@ public class SpadesGameService {
                 newRound.setRoundNumber(1);
                 newRound.setPlayer1Id(g.getPlayer1Id());
                 newRound.setPlayer2Id(g.getPlayer2Id());
+                newRound.setRoundStatus("b");
                 roundsRepository.save(newRound);
 
                 spadeGamesStorage.put(new Integer(gameId), new SpadesRoundImpl());
@@ -90,41 +87,58 @@ public class SpadesGameService {
                 roundnum = roundsList.get(0).getRoundNumber();
             }
 
-            String result = "Round # " + roundnum + "\n";
+            String result = "<h1>Round # " + roundnum + "</h1>\n";
 
             if(!spadeGamesStorage.containsKey(gameId))
             {
+                //TODO: reconstruct a working game state?
                 spadeGamesStorage.put(new Integer(gameId), new SpadesRoundImpl());
             }
             SpadesRoundImpl sGame = spadeGamesStorage.get(gameId);
 
-            result += "Your hand:\n";
+            result += "<p>Your hand:</p>\n";
             if(playerId == g.getPlayer1Id())
             {
+                result += "<p>";
                 Hand p1Hand = sGame.getHand1();
                 for(String s : p1Hand.getHand())
                 {
-                    result += s + "\n";
+                    result += s + " ";
                 }
+                result += "</p>\n";
             }
             else if(playerId == g.getPlayer2Id())
             {
+                result += "<p>";
                 Hand p2Hand = sGame.getHand2();
                 for(String s : p2Hand.getHand())
                 {
-                    result += s + "\n";
+                    result += s + " ";
                 }
+                result += "</p>\n";
             }
             else
             {
                 return "Invalid";
             }
 
-            LOGGER.debug("Deck size: " + sGame.getDeck().getDeckLength());
-            return result;
+            return generateHtmlResponse(result);
         }
 
         return "Invalid";
+    }
+
+    private String generateHtmlResponse(String s)
+    {
+        String result = "<html>\n";
+        result += "<head></head>\n";
+        result += "<body>\n";
+
+        result += s + "\n";
+
+        result += "</body>\n";
+        result += "</html>";
+        return result;
     }
 }
 

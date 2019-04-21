@@ -12,8 +12,8 @@ CREATE TABLE public.rounds
     player2_id integer NOT NULL,
     player2_bid integer,
     player2_actual integer,
-    CONSTRAINT pk_rounds PRIMARY KEY (game_id, round_number),
-    CONSTRAINT uk_rounds UNIQUE (game_id, round_number)
+    round_status character(1) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT pk_rounds PRIMARY KEY (game_id, round_number)
 ,
     CONSTRAINT fk_games FOREIGN KEY (game_id)
         REFERENCES public.games (game_id) MATCH SIMPLE

@@ -23,6 +23,8 @@ public class Rounds {
     private int player1Actual;
     @Column(name = "player2_actual")
     private int player2Actual;
+    @Column(name = "round_status")
+    private String roundStatus;
 
     public Rounds(){}
 
@@ -34,6 +36,7 @@ public class Rounds {
         this.player2Bid = rounds.getPlayer2Bid();
         this.player1Actual = rounds.getPlayer1Actual();
         this.player2Actual = rounds.getPlayer2Actual();
+        this.roundStatus = rounds.getRoundStatus();
     }
 
     public int getRoundNumber() {
@@ -100,4 +103,11 @@ public class Rounds {
         this.player2Actual = player2Actual;
     }
 
+    public String getRoundStatus() {
+        return roundStatus;
+    }
+
+    public void setRoundStatus(String roundStatus) {
+        this.roundStatus = roundStatus;
+    }
 }
