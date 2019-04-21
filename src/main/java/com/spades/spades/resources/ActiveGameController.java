@@ -2,16 +2,13 @@ package com.spades.spades.resources;
 
 import com.spades.spades.GameTimeOut;
 import com.spades.spades.model.Games;
-import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
-import com.spades.spades.repository.UsersRepository;
 import com.spades.spades.service.GameTimerService;
-import com.spades.spades.service.GetAuthenticationService;
+import com.spades.spades.service.GetCurrentPlayerInfoService;
 import com.spades.spades.service.SpadesGameService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Map;
 import java.util.Optional;
 
 @RequestMapping("/secured/all/game")
@@ -29,7 +25,7 @@ import java.util.Optional;
 public class ActiveGameController {
 
     @Autowired
-    private GetAuthenticationService authService;
+    private GetCurrentPlayerInfoService currentPlayerInfoService;
 
     @Autowired
     private SpadesGameService spadesService;
@@ -38,16 +34,14 @@ public class ActiveGameController {
     private GameTimerService gameTimerService;
 
     private final GamesRepository gamesRepository;
-    private final UsersRepository usersRepository;
 
     private static final Logger LOGGER = LogManager.getLogger("ActiveGameController.class");
 
     private static GameTimeOut timer;
 
-    ActiveGameController(GamesRepository g, UsersRepository u)
+    ActiveGameController(GamesRepository g)
     {
         gamesRepository = g;
-        usersRepository = u;
 
     }
 
@@ -58,6 +52,10 @@ public class ActiveGameController {
         Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
 
         timer = gameTimerService.getTimer(gameid);
+        if(timer == null)
+        {
+            timer = new GameTimeOut(30000L);
+        }
         if(foundGame.isPresent())
         {
             Games currGame = foundGame.get();
@@ -80,10 +78,10 @@ public class ActiveGameController {
                 }
             }
 
-            int playerId = findPlayerID();
+            int playerId = currentPlayerInfoService.findPlayerId();
             if(playerId == currGame.getPlayer1Id() || playerId == currGame.getPlayer2Id())
             {
-                String response = spadesService.progressGame(gameid, playerId);
+                String response = spadesService.progressGame(gameid);
                 timer.cancelTimeout();
                 return generateHtmlResponse(response);
             }
@@ -115,21 +113,6 @@ public class ActiveGameController {
         return generateHtmlResponse(htmlResponse);
     }
 
-    private int findPlayerID()
-    {
-        Authentication a = authService.getAuthentication();
-        String user = a.getName();
-        Optional<Users> listUser = usersRepository.findByName(user);
-
-        // User was found
-        if(listUser.isPresent())
-        {
-            int playerId = listUser.get().getId();
-            return playerId;
-        }
-
-        return -1;
-    }
 
     private String generateHtmlResponse(String s)
     {

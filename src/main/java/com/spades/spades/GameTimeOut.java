@@ -56,7 +56,7 @@ public class GameTimeOut {
 
     private String gameTimeout() {
         message = "<p>Your game has timed out waiting on a second player, please go back to the main menu</p>\n";
-        message += "<a href='./secured/all'>Home</a>";
+        message += "<a href='/secured/all'>Home</a>";
         return message;
     }
 

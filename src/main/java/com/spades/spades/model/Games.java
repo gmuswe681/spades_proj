@@ -2,7 +2,6 @@ package com.spades.spades.model;
 
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "games", schema = "public")

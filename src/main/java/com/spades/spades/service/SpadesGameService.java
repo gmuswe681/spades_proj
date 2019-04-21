@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SpadesGameService {
 
-    private Map<Integer, SpadesRoundImpl> spadeGamesStorage = new HashMap<Integer, SpadesRoundImpl>();
+    private Map<Integer, SpadesRoundImpl> spadeGamesStorage;
 
     @Autowired
     private GamesRepository gamesRepository;
@@ -31,15 +31,31 @@ public class SpadesGameService {
     @Autowired
     private RoundsRepository roundsRepository;
 
+    @Autowired
+    private GetCurrentPlayerInfoService currentPlayerInfoService;
+
     private static final Logger LOGGER = LogManager.getLogger("SpadesGameService.class");
 
-    public String progressGame(int gameId, int playerId)
+    public SpadesGameService()
+    {
+        spadeGamesStorage = new HashMap<Integer, SpadesRoundImpl>();
+    }
+
+    public String progressGame(int gameId)
     {
         Optional<Games> foundGame = gamesRepository.findByGameId(gameId);
         if(foundGame.isPresent())
         {
-            String round = createOrGetRound(gameId, playerId);
-            return round;
+            int playerId = currentPlayerInfoService.findPlayerId();
+            if(playerId >= 0)
+            {
+                String round = createOrGetRound(gameId, playerId);
+                return round;
+            }
+            else
+            {
+                return "Game: something went wrong";
+            }
         }
         else
         {

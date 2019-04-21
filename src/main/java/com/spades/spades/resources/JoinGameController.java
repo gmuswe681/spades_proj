@@ -1,14 +1,11 @@
 package com.spades.spades.resources;
 
 import com.spades.spades.model.Games;
-import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
-import com.spades.spades.repository.UsersRepository;
-import com.spades.spades.service.GetAuthenticationService;
+import com.spades.spades.service.GetCurrentPlayerInfoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,18 +26,16 @@ import java.util.Optional;
 public class JoinGameController {
 
     @Autowired
-    private GetAuthenticationService authService;
+    private GetCurrentPlayerInfoService currentPlayerInfoService;
 
 
     private final GamesRepository gamesRepository;
-    private final UsersRepository usersRepository;
 
     private static final Logger LOGGER = LogManager.getLogger("JoinGameController.class");
 
-    JoinGameController(GamesRepository g, UsersRepository u)
+    JoinGameController(GamesRepository g)
     {
         gamesRepository = g;
-        usersRepository = u;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
@@ -49,7 +44,7 @@ public class JoinGameController {
         throws IOException
     {
         int gameId = Integer.parseInt(req.getParameter("game_id"));
-        int playerID2 = findPlayerID();
+        int playerID2 = currentPlayerInfoService.findPlayerId();
         if(playerID2 >= 0)
         {
             if(gamesRepository.findOpenGamesForUser(playerID2).size() != 0)
@@ -105,22 +100,6 @@ public class JoinGameController {
         }
 
         return false;
-    }
-
-    private int findPlayerID()
-    {
-        Authentication a = authService.getAuthentication();
-        String user = a.getName();
-        Optional<Users> listUser = usersRepository.findByName(user);
-
-        // User was found
-        if(listUser.isPresent())
-        {
-            int playerId = listUser.get().getId();
-            return playerId;
-        }
-
-        return -1;
     }
 
     private void generateHtmlResponse(HttpServletResponse resp, String s)

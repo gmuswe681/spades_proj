@@ -2,16 +2,14 @@ package com.spades.spades.resources;
 
 import com.spades.spades.GameTimeOut;
 import com.spades.spades.model.Games;
-import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.repository.UsersRepository;
 import com.spades.spades.service.GameTimerService;
 import com.spades.spades.service.GenerateGameIdService;
-import com.spades.spades.service.GetAuthenticationService;
+import com.spades.spades.service.GetCurrentPlayerInfoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +25,7 @@ import java.util.*;
 public class CreateGameController {
 
     @Autowired
-    private GetAuthenticationService authService;
+    private GetCurrentPlayerInfoService currentPlayerInfoService;
 
     @Autowired
     private GenerateGameIdService gameIdService;
@@ -52,7 +50,7 @@ public class CreateGameController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public String createGame()
     {
-        int playerID1 = findPlayerID();
+        int playerID1 = currentPlayerInfoService.findPlayerId();
         String response = "";
 
         if(playerID1 >= 0)
@@ -76,22 +74,6 @@ public class CreateGameController {
         }
 
         return generateHtmlResponse(response);
-    }
-
-    private int findPlayerID()
-    {
-        Authentication a = authService.getAuthentication();
-        String user = a.getName();
-        Optional<Users> listUser = usersRepository.findByName(user);
-
-        // User was found
-        if(listUser.isPresent())
-        {
-            int playerId = listUser.get().getId();
-            return playerId;
-        }
-
-        return -1;
     }
 
     private int createGameInDatabase(int playerID)
