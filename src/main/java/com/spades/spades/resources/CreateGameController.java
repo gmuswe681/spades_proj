@@ -1,5 +1,7 @@
 package com.spades.spades.resources;
 
+import com.spades.spades.GameTimeOut;
+import com.spades.spades.TimerInterface;
 import com.spades.spades.model.Games;
 import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
@@ -20,10 +22,11 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
 
 @RequestMapping("/secured/all/creategame")
 @RestController
-public class CreateGameController {
+public class CreateGameController implements TimerInterface{
 
     @Autowired
     private GetAuthenticationService authService;
@@ -34,6 +37,8 @@ public class CreateGameController {
 
     private final GamesRepository gamesRepository;
     private final UsersRepository usersRepository;
+
+
 
     private static final Logger LOGGER = LogManager.getLogger("CreateGameController.class");
 
@@ -102,6 +107,9 @@ public class CreateGameController {
 
         LOGGER.info("game created with id =" + newId);
 
+        //Start timer to wait on 2nd player
+        Timer timer = new Timer("GameTimeout");
+        onStartTimer(timer);
         return newId;
     }
 
@@ -126,5 +134,11 @@ public class CreateGameController {
         result += "</body>\n";
         result += "</html>";
         return result;
+    }
+
+    @Override
+    public void onStartTimer(Timer timer) {
+        GameTimeOut gameTimer = new GameTimeOut(5000L);
+        gameTimer.registerTimer(timer);
     }
 }

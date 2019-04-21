@@ -1,6 +1,6 @@
 package com.spades.spades.resources;
 
-import com.spades.spades.TimeOut;
+import com.spades.spades.GameTimeOut;
 import com.spades.spades.model.Games;
 import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Time;
 import java.util.Optional;
 
 @RequestMapping("/secured/all/game")
@@ -38,6 +37,8 @@ public class ActiveGameController {
 
     private static final Logger LOGGER = LogManager.getLogger("ActiveGameController.class");
 
+    private static GameTimeOut timer;
+
     ActiveGameController(GamesRepository g, UsersRepository u)
     {
         gamesRepository = g;
@@ -50,7 +51,7 @@ public class ActiveGameController {
     public String updateGame(@PathVariable int gameid)
     {
         Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
-        TimeOut timer = new TimeOut("game", 10000L);
+        getTimer(timer);
         if(foundGame.isPresent())
         {
             Games currGame = foundGame.get();
@@ -99,6 +100,10 @@ public class ActiveGameController {
             }
 
         }
+    }
+
+    public void getTimer(GameTimeOut timer){
+        this.timer = timer.getTimeOut();
     }
 
     private String getResponse(String logResponse, String htmlResponse) {

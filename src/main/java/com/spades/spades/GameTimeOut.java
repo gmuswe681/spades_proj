@@ -6,21 +6,22 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class TimeOut {
-    private static final Logger LOGGER = LogManager.getLogger("TimeOut.class");
+public class GameTimeOut {
+    private static final Logger LOGGER = LogManager.getLogger("GameTimeOut.class");
     private Timer timer = new Timer("Timer");
     private String message;
-    public TimeOut(String handOrGame, Long delay) {
+    public GameTimeOut(Long delay) {
 
     message = "";
     TimerTask task = new TimerTask() {
+
+
+
+
         public void run() {
-            LOGGER.error(handOrGame + " has timed out.");
-            if(handOrGame == "game") {
+            LOGGER.error("Your game has timed out waiting on a second player.");
+
                 gameTimeout();
-            }else {
-                handTimeOut();
-            }
 
         }
     };
@@ -32,8 +33,17 @@ public class TimeOut {
 
 }
 
+    public void registerTimer(Timer timer)
+    {
+        this.timer = timer;
+    }
+
     public void cancelTimeout(){
         timer.cancel();
+    }
+
+    public GameTimeOut getTimeOut() {
+        return this;
     }
 
     public String getMessage(){
@@ -50,8 +60,5 @@ public class TimeOut {
         return message;
     }
 
-    private String handTimeOut(){
-        String result = "Player has timedout on this hand, your win this hand.";
-        return result;
-    }
+
 }
