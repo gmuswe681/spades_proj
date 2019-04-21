@@ -8,7 +8,7 @@ import java.util.TimerTask;
 
 public class GameTimeOut {
     private static final Logger LOGGER = LogManager.getLogger("GameTimeOut.class");
-    private Timer timer = new Timer("Timer");
+    private Timer timer = new Timer("GameTimer");
     private String message;
     public GameTimeOut(Long delay) {
 

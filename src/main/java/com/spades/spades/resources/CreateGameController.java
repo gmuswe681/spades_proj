@@ -1,11 +1,11 @@
 package com.spades.spades.resources;
 
 import com.spades.spades.GameTimeOut;
-import com.spades.spades.TimerInterface;
 import com.spades.spades.model.Games;
 import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.repository.UsersRepository;
+import com.spades.spades.service.GameTimerService;
 import com.spades.spades.service.GenerateGameIdService;
 import com.spades.spades.service.GetAuthenticationService;
 
@@ -20,13 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
+import java.util.*;
 
 @RequestMapping("/secured/all/creategame")
 @RestController
-public class CreateGameController implements TimerInterface{
+public class CreateGameController {
 
     @Autowired
     private GetAuthenticationService authService;
@@ -34,6 +32,8 @@ public class CreateGameController implements TimerInterface{
     @Autowired
     private GenerateGameIdService gameIdService;
 
+    @Autowired
+    private GameTimerService gameTimerService;
 
     private final GamesRepository gamesRepository;
     private final UsersRepository usersRepository;
@@ -108,8 +108,8 @@ public class CreateGameController implements TimerInterface{
         LOGGER.info("game created with id =" + newId);
 
         //Start timer to wait on 2nd player
-        Timer timer = new Timer("GameTimeout");
-        onStartTimer(timer);
+        GameTimeOut gameTimeOut = new GameTimeOut(20000L);
+        gameTimerService.setTimer(newId, gameTimeOut);
         return newId;
     }
 
@@ -136,9 +136,5 @@ public class CreateGameController implements TimerInterface{
         return result;
     }
 
-    @Override
-    public void onStartTimer(Timer timer) {
-        GameTimeOut gameTimer = new GameTimeOut(5000L);
-        gameTimer.registerTimer(timer);
-    }
+
 }

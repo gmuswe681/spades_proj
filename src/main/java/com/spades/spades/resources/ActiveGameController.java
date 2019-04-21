@@ -5,6 +5,7 @@ import com.spades.spades.model.Games;
 import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.repository.UsersRepository;
+import com.spades.spades.service.GameTimerService;
 import com.spades.spades.service.GetAuthenticationService;
 import com.spades.spades.service.SpadesGameService;
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RequestMapping("/secured/all/game")
@@ -31,6 +33,9 @@ public class ActiveGameController {
 
     @Autowired
     private SpadesGameService spadesService;
+
+    @Autowired
+    private GameTimerService gameTimerService;
 
     private final GamesRepository gamesRepository;
     private final UsersRepository usersRepository;
@@ -51,7 +56,8 @@ public class ActiveGameController {
     public String updateGame(@PathVariable int gameid)
     {
         Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
-        getTimer(timer);
+
+        timer = gameTimerService.getTimer(gameid);
         if(foundGame.isPresent())
         {
             Games currGame = foundGame.get();
@@ -102,9 +108,7 @@ public class ActiveGameController {
         }
     }
 
-    public void getTimer(GameTimeOut timer){
-        this.timer = timer.getTimeOut();
-    }
+
 
     private String getResponse(String logResponse, String htmlResponse) {
         LOGGER.debug(logResponse);
