@@ -1,3 +1,7 @@
+/****
+ * The endpoint exposed to interact with open Spades games.
+ ****/
+
 package com.spades.spades.resources;
 
 import com.spades.spades.GameTimeOut;
@@ -20,6 +24,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +49,9 @@ public class ActiveGameController {
 
     private static GameTimeOut timer;
 
+    private static final Pattern VALID_CARD_REGEX =
+    Pattern.compile("^([2-9JQKA]|10)[CDHS]$", Pattern.CASE_INSENSITIVE);
+
     ActiveGameController(GamesRepository g)
     {
         gamesRepository = g;
@@ -53,6 +62,7 @@ public class ActiveGameController {
     @RequestMapping(value = "/{gameid}")
     public String updateGame(@PathVariable int gameid)
     {
+        // Checks that the game being accessed is valid.
         Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
 
         timer = gameTimerService.getTimer(gameid);
@@ -85,18 +95,32 @@ public class ActiveGameController {
             int playerId = currentPlayerInfoService.findPlayerId();
             if(playerId == currGame.getPlayer1Id() || playerId == currGame.getPlayer2Id())
             {
-                String response = spadesService.progressGame(gameid);
                 timer.cancelTimeout();
 
+                // Renders the current state of the game
+                String response = spadesService.progressGame(gameid);
+
+                // Renders input fields based on the current state of the game.
                 Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
                 if(currRound.getRoundStatus().equals("b"))
                 {
+                    // Renders HTML to submit bidding amounts.
                     response += "<form>";
-                    response += "Enter your bid.";
-                    response += "<input id=\"bidAmount\" name=\"bidAmount\" type=\"number\"></input>";
+                    response += "Enter your bid: ";
+                    response += "<input id=\"bidAmount\" name=\"bidAmount\" type=\"number\" maxlength=\"2\"></input>";
                     response += "<button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/game/" + currGame.getGameId() + "/submitBid\">Submit Bid</button>";
                     response += "</form>";
                 }
+                else if(currRound.getRoundStatus().equals("a"))
+                {
+                    // Renders HTML to submit cards.
+                    response += "<form>";
+                    response += "Enter a card to play: ";
+                    response += "<input id=\"card\" name=\"card\" type=\"text\" maxlength=\"4\"></input>";
+                    response += "<button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/game/" + currGame.getGameId() + "/submitCard\">Submit Card</button>";
+                    response += "</form>";
+                }
+
                 return generateHtmlResponse(response);
             }
             else
@@ -120,6 +144,9 @@ public class ActiveGameController {
         }
     }
 
+    /****
+     * Used to process bidding inputs from the user.
+     ****/
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @RequestMapping(value = "/{gameid}/submitBid", method = RequestMethod.POST)
     public void updateBid(HttpServletRequest req, HttpServletResponse resp, @PathVariable int gameid)
@@ -148,6 +175,42 @@ public class ActiveGameController {
                 if((bidAmount > 0) && (bidAmount <= 13) && (currRound.getRoundStatus().equals("b")))
                 {
                     spadesService.submitBid(gameid, bidAmount);
+                }
+            }
+        }
+
+        String gameURL = "/secured/all/game/" + gameid;
+        resp.sendRedirect(gameURL);
+    }
+
+    /****
+     * Used to process card inputs from the user.
+     ****/
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @RequestMapping(value = "/{gameid}/submitCard", method = RequestMethod.POST)
+    public void playCard(HttpServletRequest req, HttpServletResponse resp, @PathVariable int gameid)
+        throws IOException
+    {
+        Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
+
+        if(foundGame.isPresent())
+        {
+            Games currGame = foundGame.get();
+
+            int playerId = currentPlayerInfoService.findPlayerId();
+            if(playerId == currGame.getPlayer1Id() || playerId == currGame.getPlayer2Id())
+            {
+                String card = req.getParameter("card");
+
+                if(card != null)
+                {
+                    Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
+                    Matcher matcher = VALID_CARD_REGEX.matcher(card);
+                    if((matcher.find()) && (currRound.getRoundStatus().equals("a")))
+                    {
+                        LOGGER.info("Played card: " + card);
+                        spadesService.submitCard(gameid, card);
+                    }
                 }
             }
         }

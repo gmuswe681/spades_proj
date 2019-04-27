@@ -248,7 +248,9 @@ public class SpadesGameService {
         return null;
     }
 
-    // Accepts bids from players.
+    /****
+     * Accept bids from players
+     ****/
     public void submitBid(int gameId, int amount)
     {
         // Gets player and round information.
@@ -291,6 +293,73 @@ public class SpadesGameService {
         {
             r.setRoundStatus("a");
             roundsRepository.save(r);
+        }
+    }
+
+    /****
+     * Accepts cards from players
+     ****/
+    public void submitCard(int gameId, String card)
+    {
+        // Gets player and round information.
+        Rounds r = getCurrentRoundStatus(gameId);
+        int playerId = currentPlayerInfoService.findPlayerId();
+
+        // Checks that the round is valid and is currently in *active* status
+        if((r == null) || (!r.getRoundStatus().equals("a")))
+        {
+            return;
+        }
+
+        // Checks that the player has access to this round.
+        if((r.getPlayer1Id() != playerId) && (r.getPlayer2Id() != playerId))
+        {
+            return;
+        }
+
+        // Gets the current state of the game
+        SpadesRoundImpl sGame = spadeGamesStorage.get(gameId);
+        if(sGame == null)
+        {
+            return;
+        }
+
+        int currentTurn = sGame.getCurrentTurn();
+        boolean moveSuccess = false;
+        // Checks for the player's turn.
+        if((r.getPlayer1Id() == playerId) && (currentTurn == 1))
+        {
+            moveSuccess = sGame.playHand1(card);
+        }
+        else if((r.getPlayer2Id() == playerId) && (currentTurn == 2))
+        {
+            moveSuccess = sGame.playHand2(card);
+        }
+        else
+        {
+            // It is not the user's turn.
+            return;
+        }
+
+        // If move successful, check if it is time to calculate a trick.
+        if(moveSuccess)
+        {
+            if(!sGame.getPlayer1Card().equals("") && !sGame.getPlayer2Card().equals(""))
+            {
+                int playerWon = sGame.calculateTrick();
+                if(playerWon == 1)
+                {
+                    int actual1 = r.getPlayer1Actual() + 1;
+                    r.setPlayer1Actual(actual1);
+                    roundsRepository.save(r);
+                }
+                else if(playerWon == 2)
+                {
+                    int actual2 = r.getPlayer2Actual() + 1;
+                    r.setPlayer2Actual(actual2);
+                    roundsRepository.save(r);
+                }
+            }
         }
     }
 }

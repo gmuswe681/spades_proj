@@ -27,7 +27,14 @@ public class Hand {
         hand.remove(card);
     }
 
+    public boolean checkInHand(String card){
+        if (card == null)
+        {
+            return false;
+        }
 
+        return hand.contains(card);
+    }
 
     public Integer returnHandSize(){
         return hand.size();
