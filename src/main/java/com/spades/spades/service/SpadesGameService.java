@@ -46,6 +46,10 @@ public class SpadesGameService {
             if(playerId >= 0)
             {
                 String round = createOrGetRound(gameId, playerId);
+                if(round == "")
+                {
+                    return "Game: something went wrong";
+                }
                 return round;
             }
             else
@@ -122,23 +126,55 @@ public class SpadesGameService {
                 return "Invalid";
             }
 
-            return generateHtmlResponse(result);
+            return result;
         }
 
         return "Invalid";
     }
 
-    private String generateHtmlResponse(String s)
+    public Rounds getCurrentRoundStatus(int gameId)
     {
-        String result = "<html>\n";
-        result += "<head></head>\n";
-        result += "<body>\n";
+        Optional<Games> foundGame = gamesRepository.findByGameId(gameId);
+        if(foundGame.isPresent())
+        {
+            int playerId = currentPlayerInfoService.findPlayerId();
+            if(playerId >= 0)
+            {
+                Optional<Rounds> currRound = roundsRepository.findByGameIdAndRoundStatusNot(gameId, "e");
+                if(currRound.isPresent())
+                {
+                    return currRound.get();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+        
+        return null;
+    }
 
-        result += s + "\n";
+    public void submitBid(int gameId, int amount)
+    {
+        Rounds r = getCurrentRoundStatus(gameId);
+        int playerId = currentPlayerInfoService.findPlayerId();
 
-        result += "</body>\n";
-        result += "</html>";
-        return result;
+        if(r == null || amount < 0 || amount > 13)
+        {
+            return;
+        }
+
+        if(r.getPlayer1Id() == playerId)
+        {
+            r.setPlayer1Bid(amount);
+            roundsRepository.save(r);
+        }
+        else if(r.getPlayer2Id() == playerId)
+        {
+            r.setPlayer2Bid(amount);
+            roundsRepository.save(r);
+        }
     }
 }
 

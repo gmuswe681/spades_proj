@@ -18,8 +18,6 @@ public class Deck {
 
     private Stack<String> deck = new Stack<String>();
 
-    private final static int n = SUITS.length * RANKS.length;
-
     public Deck() {
         String card;
         for (int i = 0; i < RANKS.length; i++) {
