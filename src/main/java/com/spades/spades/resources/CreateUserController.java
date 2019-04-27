@@ -29,10 +29,10 @@ public class CreateUserController {
 
     private final UsersRepository repository;
     private static final Logger LOGGER = LogManager.getLogger("CreateUserController.class");
-    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+    private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-    public static final Pattern VALID_USER_NAME = Pattern.compile("^[a-zA-Z0-9]+$");
-    public static final Pattern VALID_PASSWORD = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
+    private static final Pattern VALID_USER_NAME = Pattern.compile("^[a-zA-Z0-9]+$");
+    private static final Pattern VALID_PASSWORD = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
 
     CreateUserController(UsersRepository repository) {
         this.repository = repository;
