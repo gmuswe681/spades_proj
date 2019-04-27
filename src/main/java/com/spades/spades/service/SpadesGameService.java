@@ -204,11 +204,21 @@ public class SpadesGameService {
             result += "</p>\n";
         }
 
-        // Displays the scoring for each player.
         if(round.getRoundStatus().equals("a"))
         {
+            // Displays the scoring for each player.
             result += "<p>Player 1's Bid: " + round.getPlayer1Bid() + "</p>";
+            result += "<p>Player 1's Actual: " + round.getPlayer1Actual() + "</p>";
             result += "<p>Player 2's Bid: " + round.getPlayer2Bid() + "</p>";
+            result += "<p>Player 2's Actual: " + round.getPlayer2Actual() + "</p>";
+            result += "<br/>";
+
+            // Display the current cards played.
+            result += "<p>Player 1's Card: " + sGame.getPlayer1Card() + "</p>";
+            result += "<p>Player 2's Card: " + sGame.getPlayer2Card() + "</p>";
+
+            // Displays whose turn it currently is.
+            result += "<p>It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
         }
         else if(round.getRoundStatus().equals("b"))
         {
