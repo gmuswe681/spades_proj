@@ -1,3 +1,8 @@
+/****
+ * Represents the current state of the Spades round in progress.
+ * I.E. maintains the hands, current player's turn, etc.
+ ****/
+
 package com.spades.spades;
 
 public class SpadesRoundImpl {
