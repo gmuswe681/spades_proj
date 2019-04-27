@@ -150,6 +150,14 @@ public class CreateUserController {
             message = "Please enter a valid email address.";
             appendMessage(errorMessage, message);
         }
+        if(email.length() > 255){
+            message = "Email Address is too large.";
+            appendMessage(errorMessage, message);
+        }
+        if(lastName.length() > 255){
+            message = "Last Name is too large.";
+            appendMessage(errorMessage, message);
+        }
         if(checkExistingUsers(userName))
         {
             message = "User already exists. Pick another username please.";
