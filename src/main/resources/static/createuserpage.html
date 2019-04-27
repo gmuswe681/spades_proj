@@ -6,8 +6,15 @@
 <body>
     <p>Create a user here.</p>
     <p>
-        User name must be at least 5 characters long.
-        Password must be at least 8 characters long.
+        User name must be between 5 and 55 characters long and only alphanumeric.
+        Password must be at least 8 and 55 characters long and must have the following attributes:
+        <ul>
+            <li>At least one numeric value</li>
+            <li>At least one lower case value</li>
+            <li>At least one upper case value</li>
+            <li>No whitespace (Space or tab)</li>
+            <li>At least one of the following special characters: @#%$^</li>
+        </ul>
     </p>
     <form>
         User Name: <input id="username" name="username" type="text"></input> <br/>

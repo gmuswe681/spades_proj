@@ -31,6 +31,8 @@ public class CreateUserController {
     private static final Logger LOGGER = LogManager.getLogger("CreateUserController.class");
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    public static final Pattern VALID_USER_NAME = Pattern.compile("^[a-zA-Z0-9]+$");
+    public static final Pattern VALID_PASSWORD = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
 
     CreateUserController(UsersRepository repository) {
         this.repository = repository;
@@ -127,6 +129,10 @@ public class CreateUserController {
             message = "Username is too long";
             appendMessage(errorMessage, message);
         }
+        if (checkUsername(userName) == false){
+            message = "Username is not alphanumeric.";
+            appendMessage(errorMessage, message);
+        }
         if (password.length() <= 4)
         {
             message = "Password is too short.";
@@ -134,6 +140,10 @@ public class CreateUserController {
         }
         if (password.length() >= 55){
             message = "Password is too long";
+            appendMessage(errorMessage, message);
+        }
+        if (checkPassword(password) == false){
+            message = "Password does not meet requirments.";
             appendMessage(errorMessage, message);
         }
         if (checkEmail(email) == false){
@@ -164,6 +174,16 @@ public class CreateUserController {
 
     private boolean checkEmail(String email){
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX .matcher(email);
+        return matcher.find();
+    }
+
+    private boolean checkUsername(String username){
+        Matcher matcher = VALID_USER_NAME.matcher(username);
+        return  matcher.find();
+    }
+
+    private boolean checkPassword(String password){
+        Matcher matcher = VALID_PASSWORD.matcher(password);
         return matcher.find();
     }
 }
