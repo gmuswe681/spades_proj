@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function(){
 }, false)
 
 function startTimer() {
-    timeout = setTimeout(reloadPage, 10000);
+    timeout = setTimeout(reloadPage, 5000);
 }
 
 function reloadPage(){
