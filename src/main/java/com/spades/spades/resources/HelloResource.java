@@ -51,14 +51,15 @@ public class HelloResource {
                 buttonOrLink = "<a href=\"/secured/all/game/" + gameId + "\">Go to Existing Open Game</a>\n";
             } else {
                 buttonOrLink = "<form><button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/creategame\">Create Game</button></form>";
-                buttonOrLink += "<form><button type=\"submit\" formmethod=\"get\" formaction=\"/secured/all/retrieveopengames/\">Find Games</button></form>";
+                buttonOrLink += "<a href=\"/secured/all/retrieveopengames/\">Find Games</a><br/>";
+                buttonOrLink += "<a href=\"/secured/all/viewendedgames\">View Past Games</a><br/>\n";
             }
         }
 
         String result = "<html>\n";
         result += "<head></head>\n";
         result += "<body>\n";
-        result += "<p>Secured Hello!</p>\n";
+        result += "<p>Hello! What Spades related thing would you like to do?</p>\n";
 
         result += buttonOrLink;
 

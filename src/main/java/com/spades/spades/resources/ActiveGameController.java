@@ -60,7 +60,7 @@ public class ActiveGameController {
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @RequestMapping(value = "/{gameid}")
-    public String updateGame(@PathVariable int gameid)
+    public String updateGame(@PathVariable int gameid, HttpServletResponse resp)
     {
         // Checks that the game being accessed is valid.
         Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
@@ -73,6 +73,8 @@ public class ActiveGameController {
         if(foundGame.isPresent())
         {
             Games currGame = foundGame.get();
+
+            // Just prints a waiting screen if players haven't joined yet.
             if(currGame.getGameStatus().equals("o"))
             {
                 if(timer.getMessage() == "running"){
@@ -81,6 +83,22 @@ public class ActiveGameController {
                    return getResponse(timer.getMessage(), timer.getMessage());
                 }
 
+            }
+
+            // Redirects if this game has ended.
+            if(currGame.getGameStatus().equals("e"))
+            {
+                try
+                {
+                    String gameURL = "/secured/all/viewendedgames/" + gameid;
+                    resp.sendRedirect(gameURL);
+                }
+                catch (IOException e)
+                {
+                    String errResponse = "<p>Sorry, an error occurred on our end.</p>\n";
+                    errResponse += "<a href=\"/\">Go to homepage</a>";
+                    return getResponse("Unable to redirect to ended game", errResponse);
+                }
             }
 
             if(!currGame.getGameStatus().equals("a"))
