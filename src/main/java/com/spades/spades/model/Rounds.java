@@ -2,6 +2,7 @@ package com.spades.spades.model;
 
 import javax.persistence.*;
 
+@IdClass(com.spades.spades.model.RoundsKey.class)
 @Entity
 @Table(name = "rounds", schema = "public")
 public class Rounds {
@@ -9,8 +10,11 @@ public class Rounds {
     @Id
     @Column(name = "round_number")
     private int roundNumber;
+
+    @Id
     @Column(name = "game_id")
     private int gameId;
+
     @Column(name = "player1_id")
     private int player1Id;
     @Column(name = "player2_id")
