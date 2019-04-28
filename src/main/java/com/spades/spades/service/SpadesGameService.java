@@ -8,9 +8,11 @@ package com.spades.spades.service;
 import com.spades.spades.Hand;
 import com.spades.spades.SpadesRoundImpl;
 import com.spades.spades.model.Games;
+import com.spades.spades.model.Moves;
 import com.spades.spades.repository.GamesRepository;
 
 import com.spades.spades.model.Rounds;
+import com.spades.spades.repository.MovesRepository;
 import com.spades.spades.repository.RoundsRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.support.MethodOverride;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +38,9 @@ public class SpadesGameService {
 
     @Autowired
     private GetCurrentPlayerInfoService currentPlayerInfoService;
+
+    @Autowired
+    private MovesRepository movesRepository;
 
 
     public SpadesGameService()
@@ -370,6 +376,13 @@ public class SpadesGameService {
                     r = roundsRepository.save(r);
                 }
             }
+            Moves m = new Moves();
+            m.setGameId(r.getGameId());
+            m.setRoundNo(r.getRoundNumber());
+            m.setUserId(playerId);
+            m.setCardPlayed(card);
+            movesRepository.save(m);
+
         }
 
         // If both players hands are empty, update the round status.

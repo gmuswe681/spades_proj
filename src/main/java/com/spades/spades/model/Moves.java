@@ -1,8 +1,8 @@
 package com.spades.spades.model;
 
 import javax.persistence.*;
-import java.util.Set;
 
+@Entity
 public class Moves {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,14 +17,6 @@ public class Moves {
     @Column(name="card_played")
     private String cardPlayed;
 
-  //  @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-//    @JoinTable(name = "rounds", joinColumns = @JoinColumn(name = "round_number"))
-  //  private Set<Rounds> rounds;
-
-  //  @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
- //   @JoinTable(name = "games", joinColumns = @JoinColumn(name = "game_id"))
-  //  private Set<Games> games;
-
     public Moves(){}
 
     public Moves(Moves moves) {
@@ -32,8 +24,7 @@ public class Moves {
         this.gameId = moves.getGameId();
         this.roundId = moves.getRoundNo();
         this.userId = moves.getUserId();
-    //    this.rounds = moves.getRounds();
-    //    this.games = moves.getGames();
+        this.cardPlayed = moves.getCardPlayed();
     }
 
     public int getMoveNo() {
@@ -62,19 +53,8 @@ public class Moves {
 
     public void setUserId(int userId){this.userId = userId;}
 
-//    public Set<Rounds> getRounds() {
-//        return rounds;
-//    }
+    public void setCardPlayed(String cardPlayed) {this.cardPlayed = cardPlayed;}
 
-//    public void setRounds(Set<Rounds> rounds) {
-//        this.rounds = rounds;
-//    }
+    public String getCardPlayed(){return this.cardPlayed;}
 
-//    public Set<Games> getGames() {
-//        return games;
-//    }
-//
-//    public void setGames(Set<Games> games) {
-//        this.games = games;
-//    }
 }
