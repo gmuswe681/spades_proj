@@ -200,7 +200,8 @@ public class ActiveGameController {
             int playerId = currentPlayerInfoService.findPlayerId();
             if(playerId == currGame.getPlayer1Id() || playerId == currGame.getPlayer2Id())
             {
-                String card = req.getParameter("card");
+                //Ensures that whatever the user entered it uppercases it
+                String card = req.getParameter("card").toUpperCase();
 
                 if(card != null)
                 {
