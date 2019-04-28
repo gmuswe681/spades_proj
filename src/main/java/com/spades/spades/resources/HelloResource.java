@@ -53,6 +53,7 @@ public class HelloResource {
                 buttonOrLink = "<form><button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/creategame\">Create Game</button></form>";
                 buttonOrLink += "<a href=\"/secured/all/retrieveopengames/\">Find Games</a><br/>";
                 buttonOrLink += "<a href=\"/secured/all/viewendedgames\">View Past Games</a><br/>\n";
+                buttonOrLink += "<a href=\"/secured/all/viewwinlossstats\">View User Statistics</a><br/>\n";
             }
         }
 

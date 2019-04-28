@@ -13,4 +13,7 @@ public interface GamesRepository extends JpaRepository<Games, Integer> {
 
     @Query("select g from Games g WHERE (g.player1Id = ?1 OR g.player2Id = ?1) AND not(g.gameStatus = 'e')")
     List<Games> findOpenGamesForUser(int userId);
+
+    @Query("select g from Games g WHERE (g.player1Id = ?1 OR g.player2Id = ?1) AND (g.gameStatus = 'e')")
+    List<Games> findEndedGamesForUser(int userId);
 }
