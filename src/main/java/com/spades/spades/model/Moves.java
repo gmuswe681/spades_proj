@@ -14,12 +14,12 @@ public class Moves {
     private int gameId;
 
 
-    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "rounds", joinColumns = @JoinColumn(name = "round_number"))
-    private Set<Rounds> rounds;
+  //  @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+//    @JoinTable(name = "rounds", joinColumns = @JoinColumn(name = "round_number"))
+  //  private Set<Rounds> rounds;
 
-    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "games", joinColumns = @JoinColumn(name = "game_id"))
+  //  @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+ //   @JoinTable(name = "games", joinColumns = @JoinColumn(name = "game_id"))
     private Set<Games> games;
 
     public Moves(){}

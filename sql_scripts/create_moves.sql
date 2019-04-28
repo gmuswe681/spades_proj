@@ -4,19 +4,16 @@
 
 CREATE TABLE public.moves
 (
+    move_id integer NOT NULL,
     game_id integer NOT NULL,
-    round_number integer NOT NULL,
-    move_number integer NOT NULL,
-    CONSTRAINT pk_moves PRIMARY KEY (game_id, round_number, move_number),
-    CONSTRAINT fk_moves FOREIGN KEY (game_id, round_number)
-        REFERENCES public.rounds (game_id, round_number) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    user_id integer NOT NULL,
+    round_id integer NOT NULL,
+    card_played character(3) NOT NULL,
+    CONSTRAINT move_pk PRIMARY KEY (move_id, game_id, round_id)
 )
 WITH (
     OIDS = FALSE
-)
-TABLESPACE pg_default;
+);
 
 ALTER TABLE public.moves
     OWNER to postgres;
