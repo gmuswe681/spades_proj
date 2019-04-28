@@ -10,7 +10,9 @@ import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.repository.RoundsRepository;
 import com.spades.spades.repository.UsersRepository;
+import com.spades.spades.service.SpadesGameService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/secured/all/viewendedgames")
 @RestController
 public class ViewEndedGamesController {
+
+    @Autowired
+    private SpadesGameService spadesService;
 
     private final GamesRepository gamesRepository;
     private final RoundsRepository roundsRepository;
@@ -116,17 +121,97 @@ public class ViewEndedGamesController {
         players.add(player1.get());
         players.add(player2.get());
 
+        // Displays players (and who won)
+        String spadeGameName = "Spades Game #" + g.getGameId();
+        String result = "<h1>" + spadeGameName + "</h1>";
+        for(int i = 0; i < players.size(); i++)
+        {
+            Users u = players.get(i);
+            result += "<p>Player #" + (i+1) + ": " + u.getName();
+            if(g.getWinnerId() == u.getId())
+            {
+                result += "(WINNER)";
+            }
+            result += "</p>";
+        }
+
         // Gets round information
         List<Rounds> rounds = roundsRepository.findByGameId(g.getGameId());
 
-        String spadeGameName = "Spades Game" + g.getGameId();
-        String result = "<h1>" + spadeGameName + "</h1>";
-        for(Users u : players)
+        // Creates table headers
+        String tableResult = "<table border=\"1\">";
+        tableResult += "<tr>";
+        tableResult += "<th>Round Number</th>";
+        for(int i = 0; i < players.size(); i++)
         {
-            if(g.getWinnerId() == u.getId())
+            String playerString = "Player #" + ((int) i+1);
+            tableResult += "<th>" + playerString + "'s Bid</th>";
+            tableResult += "<th>" + playerString + "'s Actual</th>";
+            tableResult += "<th>" + playerString + "'s Score</th>";
+            tableResult += "<th>" + playerString + "'s Bags</th>";
+        }
+        tableResult += "</tr>";
+
+        // Holds accumulated game data
+        ArrayList<Integer> totalBags = new ArrayList<Integer>(players.size());
+        ArrayList<Integer> totalScore = new ArrayList<Integer>(players.size());
+        for(int i = 0; i < players.size(); i++)
+        {
+            totalBags.add(0);
+            totalScore.add(0);
+        }
+
+        for(Rounds r : rounds)
+        {
+            // Gets the round number
+            tableResult += "<tr>";
+            tableResult += "<td>" + r.getRoundNumber() + "</td>";
+
+            // Creates a list containing round information for each player
+            ArrayList<Integer> roundBid = new ArrayList<Integer>(players.size());
+            ArrayList<Integer> roundActual = new ArrayList<Integer>(players.size());
+            roundBid.add(r.getPlayer1Bid());
+            roundBid.add(r.getPlayer2Bid());
+            roundActual.add(r.getPlayer1Actual());
+            roundActual.add(r.getPlayer2Actual());
+            
+            // Processes data for each player
+            for(int i = 0; i < players.size(); i++)
             {
-                result += "<p>Winner of this game: " + u.getName() + "</p>";
+                int points = spadesService.calculatePoints(roundBid.get(i), roundActual.get(i));
+                int bags = spadesService.calculateBags(roundBid.get(i), roundActual.get(i));
+
+                // Updates accumulated data for a player.
+                int accumulatedPoints = totalScore.get(i);
+                totalScore.set(i, accumulatedPoints + points);
+                int accumulatedBags = totalBags.get(i);
+                totalBags.set(i, accumulatedBags + bags);
+
+                // Adds to table display
+                tableResult += "<td>" + roundBid.get(i) + "</td>";
+                tableResult += "<td>" + roundActual.get(i) + "</td>";
+                tableResult += "<td>" + points + "</td>";
+                tableResult += "<td>" + bags + "</td>";
             }
+
+            tableResult += "</tr>\n";
+        }
+        tableResult += "</table>";
+
+        result += tableResult;
+
+        // Now prints the aggregate results for each player.
+        for(int i = 0; i < players.size(); i++)
+        {
+            int rawPoints = totalScore.get(i);
+            int numBags = totalBags.get(i);
+            int finalPoints =  rawPoints - ((numBags / 10) * 100);
+
+            String playerString = "Player #" + ((int)i+1) + "'s";
+            result += "<p>" + playerString + " Raw Score: " + rawPoints + "<br/>\n";
+            result += "<p>" + playerString + " Total Bags: " + numBags + "<br/>\n";
+            result += "<p>" + playerString + " Adjusted Score: " + finalPoints + "<br/>\n";
+            result += "</p>";
         }
 
         return result;

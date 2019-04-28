@@ -475,7 +475,7 @@ public class SpadesGameService {
      * Given a bid and the actual number of tricks, determines
      * how many points the player got
      ****/
-    private int calculatePoints(int bid, int actual)
+    public int calculatePoints(int bid, int actual)
     {
         // The zero case.
         if(bid == 0)
@@ -506,7 +506,7 @@ public class SpadesGameService {
      * Given a bid and the actual number of tricks, determines
      * the number of bags the player got.
      ****/
-    private int calculateBags(int bid, int actual)
+    public int calculateBags(int bid, int actual)
     {
         // The zero case.
         if(bid == 0)
