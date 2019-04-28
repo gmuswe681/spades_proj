@@ -1,8 +1,6 @@
 package com.spades.spades.resources;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.spades.spades.model.Games;
 import com.spades.spades.model.Users;
@@ -12,9 +10,7 @@ import com.spades.spades.service.GetCurrentPlayerInfoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/secured/all/viewwinlossstats")
