@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.spades.spades.model.Games;
+import com.spades.spades.model.Moves;
 import com.spades.spades.model.Rounds;
 import com.spades.spades.model.Users;
 import com.spades.spades.repository.GamesRepository;
+import com.spades.spades.repository.MovesRepository;
 import com.spades.spades.repository.RoundsRepository;
 import com.spades.spades.repository.UsersRepository;
 import com.spades.spades.service.SpadesGameService;
@@ -29,12 +31,14 @@ public class ViewEndedGamesController {
     private final GamesRepository gamesRepository;
     private final RoundsRepository roundsRepository;
     private final UsersRepository usersRepository;
+    private final MovesRepository movesRepository;
 
-    ViewEndedGamesController(GamesRepository g, RoundsRepository r, UsersRepository u)
+    ViewEndedGamesController(GamesRepository g, RoundsRepository r, UsersRepository u, MovesRepository m)
     {
         gamesRepository = g;
         roundsRepository = r;
         usersRepository = u;
+        movesRepository = m;
     }
 
     // Allows any user to view the results of games that have ended.
@@ -141,16 +145,16 @@ public class ViewEndedGamesController {
         // Creates table headers
         String tableResult = "<table border=\"1\">";
         tableResult += "<tr>";
-        tableResult += "<th>Round Number</th>";
+        tableResult += "<th>Round</th>";
         for(int i = 0; i < players.size(); i++)
         {
-            String playerString = "Player #" + ((int) i+1);
+            String playerString = players.get(i).getName();
             tableResult += "<th>" + playerString + "'s Bid</th>";
             tableResult += "<th>" + playerString + "'s Actual</th>";
             tableResult += "<th>" + playerString + "'s Score</th>";
             tableResult += "<th>" + playerString + "'s Bags</th>";
         }
-        tableResult += "</tr>";
+        tableResult += "</tr>\n";
 
         // Holds accumulated game data
         ArrayList<Integer> totalBags = new ArrayList<Integer>(players.size());
@@ -207,11 +211,36 @@ public class ViewEndedGamesController {
             int numBags = totalBags.get(i);
             int finalPoints =  rawPoints - ((numBags / 10) * 100);
 
-            String playerString = "Player #" + ((int)i+1) + "'s";
+            String playerString = players.get(i).getName();
             result += "<p>" + playerString + " Raw Score: " + rawPoints + "<br/>\n";
-            result += "<p>" + playerString + " Total Bags: " + numBags + "<br/>\n";
-            result += "<p>" + playerString + " Adjusted Score: " + finalPoints + "<br/>\n";
-            result += "</p>";
+            result += playerString + " Total Bags: " + numBags + "<br/>\n";
+            result += playerString + " Adjusted Score: " + finalPoints + "<br/>\n";
+            result += "</p>\n";
+        }
+
+
+        // Retrieve all game moves from the moves table.
+        List<Moves> moves = movesRepository.findByGameIdOrderByMoveIdAsc(g.getGameId());
+        result += "<h2>Move List</h2>";
+        int moveCount = 1;
+        for(Moves m : moves)
+        {
+            // Check which player made the move
+            int playerId = m.getUserId();
+            String playerName = "Unknown";
+            for(Users u : players)
+            {
+                if(playerId == u.getId())
+                {
+                    playerName = u.getName();
+                }
+            }
+
+            // Add the move.
+            result += "<p> Move " + moveCount + ": ";
+            result += playerName + " played card " + m.getCardPlayed();
+            result += "</p>\n";
+            moveCount++;
         }
 
         return result;

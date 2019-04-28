@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MovesRepository extends JpaRepository<Moves, Integer>{
-    List<Moves> findByGameId(int gameId);
+    List<Moves> findByGameIdOrderByMoveIdAsc(int gameId);
 }
