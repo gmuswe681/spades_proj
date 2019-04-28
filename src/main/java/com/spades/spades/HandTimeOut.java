@@ -7,7 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class HandTimeOut {
-    private static final Logger LOGGER = LogManager.getLogger("GameTimeOut.class");
+    private static final Logger LOGGER = LogManager.getLogger("HandTimeOut.class");
     private Timer timer = new Timer("HandTimer");
     private String message;
 
