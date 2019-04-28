@@ -4,6 +4,8 @@ package com.spades.spades.resources;
 import com.spades.spades.model.Games;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.service.GetCurrentPlayerInfoService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,8 @@ import java.util.List;
 @RequestMapping("/")
 @RestController
 public class HelloResource {
+
+    private static final Logger LOGGER = LogManager.getLogger("HelloResource.class");
 
 
     @Autowired
@@ -46,6 +50,7 @@ public class HelloResource {
         int playerID1 = currentPlayerInfoService.findPlayerId();
         String buttonOrLink = "";
         if(playerID1 >= 0) {
+            LOGGER.info(playerID1 + " has logged in at " + System.currentTimeMillis());
             if (getUserOpenGames(playerID1) != -1) {
                 int gameId = getUserOpenGames(playerID1);
                 buttonOrLink = "<a href=\"/secured/all/game/" + gameId + "\">Go to Existing Open Game</a>\n";
@@ -75,6 +80,7 @@ public class HelloResource {
             List<Games> openGames = gamesRepository.findOpenGamesForUser(userId);
             if(openGames.size() == 0)
             {
+                LOGGER.error("No open Games.");
                 return -1;
             }
             return openGames.get(0).getGameId();
