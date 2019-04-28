@@ -15,6 +15,8 @@ import com.spades.spades.model.Rounds;
 import com.spades.spades.repository.MovesRepository;
 import com.spades.spades.repository.RoundsRepository;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -22,11 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.support.MethodOverride;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SpadesGameService {
+
+    private static final Logger LOGGER = LogManager.getLogger("SpadesGameService.class");
 
     private Map<Integer, SpadesRoundImpl> spadeGamesStorage;
 
@@ -63,6 +66,7 @@ public class SpadesGameService {
                 Rounds round = createOrGetRound(gameId, playerId);
                 if(round == null)
                 {
+                    LOGGER.error("Round is null.");
                     return "Game: something went wrong";
                 }
 
@@ -70,17 +74,20 @@ public class SpadesGameService {
 
                 if(roundRender == "")
                 {
+                    LOGGER.error("RoundRender is null.");
                     return "Game: something went wrong";
                 }
                 return roundRender;
             }
             else
             {
+                LOGGER.error("Player not found.");
                 return "Game: something went wrong";
             }
         }
         else
         {
+            LOGGER.error("Game not found.");
             return "Game not found";
         }
     }

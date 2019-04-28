@@ -186,7 +186,7 @@ public class ActiveGameController {
                 }
                 catch (NumberFormatException e)
                 {
-                    LOGGER.debug("User passed input that wasn't a number.");
+                    LOGGER.error("User passed input that wasn't a number.");
                 }
 
                 Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
@@ -227,7 +227,6 @@ public class ActiveGameController {
                     Matcher matcher = VALID_CARD_REGEX.matcher(card);
                     if((matcher.find()) && (currRound.getRoundStatus().equals("a")))
                     {
-                        LOGGER.info("Played card: " + card);
                         spadesService.submitCard(gameid, card);
                     }
                 }

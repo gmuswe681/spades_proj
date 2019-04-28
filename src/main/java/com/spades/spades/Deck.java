@@ -1,5 +1,6 @@
 package com.spades.spades;
 
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Stack;
 
@@ -30,7 +31,7 @@ public class Deck {
     }
 
     public void shuffle(){
-        Collections.shuffle(deck);
+        Collections.shuffle(deck, new SecureRandom());
     }
 
     public String drawCard(){
