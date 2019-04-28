@@ -234,6 +234,7 @@ public class ActiveGameController {
         result += s + "\n";
 
         result += "</body>\n";
+        result += "<script src=\"/reloadPage.js\"></script>";
         result += "</html>";
         return result;
     }
