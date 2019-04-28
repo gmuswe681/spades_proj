@@ -109,9 +109,9 @@ public class SpadesGameService {
                 {
                     for(Rounds temp : roundsList)
                     {
-                        if(temp.getRoundNumber() > roundnum)
+                        if(temp.getRoundNumber() >= roundnum)
                         {
-                            roundnum = temp.getRoundNumber();
+                            roundnum = temp.getRoundNumber() + 1;
                         }
                     }
                 }
@@ -361,14 +361,154 @@ public class SpadesGameService {
                 {
                     int actual1 = r.getPlayer1Actual() + 1;
                     r.setPlayer1Actual(actual1);
-                    roundsRepository.save(r);
+                    r = roundsRepository.save(r);
                 }
                 else if(playerWon == 2)
                 {
                     int actual2 = r.getPlayer2Actual() + 1;
                     r.setPlayer2Actual(actual2);
-                    roundsRepository.save(r);
+                    r = roundsRepository.save(r);
                 }
+            }
+        }
+
+        // If both players hands are empty, update the round status.
+        if(sGame.getHand1().returnHandSize() == 0 && sGame.getHand2().returnHandSize() == 0)
+        {
+            r.setRoundStatus("e");
+            roundsRepository.save(r);
+
+            // Now check to see if the game has been won.
+            checkWinCondition(gameId);
+        }
+    }
+
+    private void checkWinCondition(int gameId)
+    {
+        Optional<Games> foundGame = gamesRepository.findByGameId(gameId);
+        if(foundGame.isPresent())
+        {
+            Games g = foundGame.get();
+            List<Rounds> roundsList = roundsRepository.findByGameId(gameId);
+
+            if(roundsList.size() > 0)
+            {
+                int player1Points = 0;
+                int player1Bags = 0;
+                int player2Points = 0;
+                int player2Bags = 0;
+
+                //Calculates the number of points and bags accumulated over each round.
+                for(Rounds temp : roundsList)
+                {
+                    int roundBid1 = temp.getPlayer1Bid();
+                    int roundActual1 = temp.getPlayer1Actual();
+                    
+                    player1Points += calculatePoints(roundBid1, roundActual1);
+                    player1Bags += calculateBags(roundBid1, roundActual1);
+
+                    int roundBid2 = temp.getPlayer2Bid();
+                    int roundActual2 = temp.getPlayer2Actual();
+                    
+                    player2Points += calculatePoints(roundBid2, roundActual2);
+                    player2Bags += calculateBags(roundBid2, roundActual2);
+                }
+
+                //Subtracts from points based on the number of accumulated bags.
+                player1Points -= (player1Bags / 10) * 100;
+                player2Points -= (player2Bags / 10) * 100;
+
+                // Checks who won
+                int pointsToWin = g.getPointsToWin();
+                if (player1Points > pointsToWin && player2Points > pointsToWin)
+                {
+                    // If both players reached the points to win mark, calculate
+                    // who has more points
+                    if(player1Points > player2Points)
+                    {
+                        g.setWinnerId(g.getPlayer1Id());
+                        g.setGameStatus("e");
+                        gamesRepository.save(g);
+                    }
+                    else if (player2Points > player1Points)
+                    {
+                        g.setWinnerId(g.getPlayer2Id());
+                        g.setGameStatus("e");
+                        gamesRepository.save(g);
+                    }
+                    else
+                    {
+                        // Players somehow managed to tie.
+                        // Have to play another game.
+                    }
+                }
+                else if(player1Points > pointsToWin)
+                {
+                    g.setWinnerId(g.getPlayer1Id());
+                    g.setGameStatus("e");
+                    gamesRepository.save(g);
+                }
+                else if(player2Points > pointsToWin)
+                {
+                    g.setWinnerId(g.getPlayer2Id());
+                    g.setGameStatus("e");
+                    gamesRepository.save(g);
+                }
+            }
+        }
+    }
+
+    /****
+     * Given a bid and the actual number of tricks, determines
+     * how many points the player got
+     ****/
+    private int calculatePoints(int bid, int actual)
+    {
+        // The zero case.
+        if(bid == 0)
+        {
+            if(actual == 0)
+            {
+                return 100;
+            }
+            else
+            {
+                return -100;
+            }
+        }
+        else
+        {
+            if(actual >= bid)
+            {
+                return bid * 10 + (actual - bid);
+            }
+            else
+            {
+                return bid * -10;
+            }
+        }
+    }
+
+    /****
+     * Given a bid and the actual number of tricks, determines
+     * the number of bags the player got.
+     ****/
+    private int calculateBags(int bid, int actual)
+    {
+        // The zero case.
+        if(bid == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            if(actual > bid)
+            {
+                return (actual - bid);
+            }
+            else
+            {
+                return 0;
             }
         }
     }
