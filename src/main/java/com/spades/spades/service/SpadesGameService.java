@@ -235,11 +235,11 @@ public class SpadesGameService {
         }
         else if(round.getRoundStatus().equals("b"))
         {
-            if((playerId == round.getPlayer1Id()) && (round.getPlayer1Bid() > 0))
+            if((playerId == round.getPlayer1Id()) && (round.getPlayer1Bid() >= 0))
             {
                 result += "<p>Your current Bid: " + round.getPlayer1Bid() + "</p>";
             }
-            else if(playerId == round.getPlayer2Id() && (round.getPlayer2Bid() > 0))
+            else if(playerId == round.getPlayer2Id() && (round.getPlayer2Bid() >= 0))
             {
                 result += "<p>Your current Bid: " + round.getPlayer2Bid() + "</p>";
             }

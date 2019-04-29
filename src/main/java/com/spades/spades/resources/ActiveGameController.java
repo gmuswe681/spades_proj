@@ -47,8 +47,6 @@ public class ActiveGameController {
 
     private static final Logger LOGGER = LogManager.getLogger("ActiveGameController.class");
 
-    private static GameTimeOut timer;
-
     private static final Pattern VALID_CARD_REGEX =
     Pattern.compile("^([2-9JQKA]|10)[CDHS]$", Pattern.CASE_INSENSITIVE);
 
@@ -65,7 +63,7 @@ public class ActiveGameController {
         // Checks that the game being accessed is valid.
         Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
 
-        timer = gameTimerService.getTimer(gameid);
+        GameTimeOut timer = gameTimerService.getTimer(gameid);
         if(timer == null)
         {
             timer = new GameTimeOut(30000L);
@@ -190,7 +188,7 @@ public class ActiveGameController {
                 }
 
                 Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
-                if((bidAmount > 0) && (bidAmount <= 13) && (currRound.getRoundStatus().equals("b")))
+                if((bidAmount >= 0) && (bidAmount <= 13) && (currRound.getRoundStatus().equals("b")))
                 {
                     spadesService.submitBid(gameid, bidAmount);
                 }
