@@ -245,6 +245,16 @@ public class SpadesGameService {
             }
         }
 
+        if(sGame.gameTimedOut())
+        {
+            Optional<Games> foundGame = gamesRepository.findByGameId(round.getGameId());
+            if(foundGame.isPresent()) {
+                Games g = foundGame.get();
+
+                forfeitUpdate(g, round, sGame.getCurrentTurn());
+            }
+        }
+
         return result;
     }
 
@@ -349,6 +359,20 @@ public class SpadesGameService {
 
         int currentTurn = sGame.getCurrentTurn();
         boolean moveSuccess = false;
+
+        // Checks for gameTimeout
+        if(sGame.gameTimedOut())
+        {
+            Optional<Games> foundGame = gamesRepository.findByGameId(gameId);
+            if(foundGame.isPresent())
+            {
+                Games g = foundGame.get();
+
+                forfeitUpdate(g, r, currentTurn);
+            }
+            return;
+        }
+
         // Checks for the player's turn.
         if((r.getPlayer1Id() == playerId) && (currentTurn == 1))
         {
@@ -530,6 +554,45 @@ public class SpadesGameService {
             {
                 return 0;
             }
+        }
+    }
+
+    /****
+     * Updates the database in the case of a game timeout
+     ****/
+    private void forfeitUpdate(Games g, Rounds r, int currentTurn)
+    {
+        if(g.getGameStatus().equals("e"))
+        {
+            return;
+        }
+
+        r.setRoundStatus("e");
+        roundsRepository.save(r);
+
+        if(r.getPlayer1Bid() == -1)
+        {
+            g.setWinnerId(g.getPlayer2Id());
+            g.setGameStatus("e");
+            gamesRepository.save(g);
+        }
+        else if(r.getPlayer2Bid() == -1)
+        {
+            g.setWinnerId(g.getPlayer1Id());
+            g.setGameStatus("e");
+            gamesRepository.save(g);
+        }
+        else if(currentTurn == 1)
+        {
+            g.setWinnerId(g.getPlayer2Id());
+            g.setGameStatus("e");
+            gamesRepository.save(g);
+        }
+        else if(currentTurn == 2)
+        {
+            g.setWinnerId(g.getPlayer1Id());
+            g.setGameStatus("e");
+            gamesRepository.save(g);
         }
     }
 }

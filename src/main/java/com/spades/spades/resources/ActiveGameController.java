@@ -217,10 +217,11 @@ public class ActiveGameController {
             if(playerId == currGame.getPlayer1Id() || playerId == currGame.getPlayer2Id())
             {
                 //Ensures that whatever the user entered it uppercases it
-                String card = req.getParameter("card").toUpperCase();
+                String card = req.getParameter("card");
 
                 if(card != null)
                 {
+                    card = card.toUpperCase();
                     Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
                     Matcher matcher = VALID_CARD_REGEX.matcher(card);
                     if((matcher.find()) && (currRound.getRoundStatus().equals("a")))
