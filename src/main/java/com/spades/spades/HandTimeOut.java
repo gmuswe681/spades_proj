@@ -10,23 +10,18 @@ public class HandTimeOut {
     private static final Logger LOGGER = LogManager.getLogger("HandTimeOut.class");
     private Timer timer = new Timer("HandTimer");
     private String message;
+    private boolean hasTimedOut;
 
     public HandTimeOut(Long delay){
         message = "";
+        hasTimedOut = false;
         TimerTask task = new TimerTask() {
-
-
-
-
             public void run() {
                 LOGGER.error("Your game has timed out waiting on a second player.");
 
                 handTimeout();
-
             }
         };
-
-
 
         timer.schedule(task,delay);
     }
@@ -36,6 +31,9 @@ public class HandTimeOut {
         timer.cancel();
     }
 
+    public boolean getTimedOut(){
+        return hasTimedOut;
+    }
 
     public String getMessage(){
         if (message == ""){
@@ -46,6 +44,8 @@ public class HandTimeOut {
     }
 
     private String handTimeout() {
+        hasTimedOut = true;
+
         message = "<p>Your hand has timed out. Game over.</p>\n";
         message += "<a href='/secured/all'>Home</a>";
         return message;

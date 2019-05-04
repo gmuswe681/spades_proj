@@ -29,6 +29,9 @@ public class SpadesRoundImpl {
     private String player1Card;
     private String player2Card;
 
+    // A timeout for a given game.
+    private HandTimeOut timer;
+
     public SpadesRoundImpl() {
         this.deck = new Deck();
         this.deck.shuffle();
@@ -53,6 +56,8 @@ public class SpadesRoundImpl {
         spadesBroken = false;
         player1Card = "";
         player2Card = "";
+
+        timer = new HandTimeOut(180000L);
     }
 
     public Hand getHand1()
@@ -90,12 +95,22 @@ public class SpadesRoundImpl {
         return player2Card;
     }
 
+    public boolean gameTimedOut()
+    {
+        return timer.getTimedOut();
+    }
+
     /****
      * Attempts to play a card from player 1's hand
      * returns true if the move was successful.
      ****/
     public boolean playHand1(String card)
     {
+        if(timer.getTimedOut())
+        {
+            return false;
+        }
+
         // Checks that it is player 1's turn.
         if(currentTurn != 1)
         {
@@ -173,7 +188,7 @@ public class SpadesRoundImpl {
 
             // Sets current turn to 0, to ensure played cards are checked first.
             currentTurn = 0;
-
+            resetTimer();
             return true;
         }
     }
@@ -184,6 +199,11 @@ public class SpadesRoundImpl {
      ****/
     public boolean playHand2(String card)
     {
+        if(timer.getTimedOut())
+        {
+            return false;
+        }
+
         // Checks that it is player 2's turn.
         if(currentTurn != 2)
         {
@@ -261,7 +281,7 @@ public class SpadesRoundImpl {
 
             // Sets current turn to 0, to ensure played cards are checked first.
             currentTurn = 0;
-
+            resetTimer();
             return true;
         }
     }
@@ -416,5 +436,18 @@ public class SpadesRoundImpl {
         }
 
         return null;
+    }
+
+    /****
+     * Resets the internal timer
+     ****/
+    private void resetTimer()
+    {
+        if((timer == null) || !(timer.getTimedOut()))
+        {
+            timer.cancelTimeout();
+            timer = new HandTimeOut(180000L);
+    
+        }
     }
 }
