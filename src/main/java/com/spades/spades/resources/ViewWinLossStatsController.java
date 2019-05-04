@@ -34,17 +34,18 @@ public class ViewWinLossStatsController {
     @RequestMapping(value = "")
     public String viewStatistics()
     {
-        String result = "<html>\n";
-        result += "<head></head>\n";
-        result += "<body>\n";
+        StringBuilder result = new StringBuilder();
+        result.append("<html>\n");
+        result.append("<head></head>\n");
+        result.append("<body>\n");
 
-        result += generateStatisticsLinks();
+        result.append(generateStatisticsLinks());
 
-        result += "<a href=\"/secured/all\">Go Back</a>\n";
-        result += "<a href=\"/logout\">Logout</a>\n";
-        result += "</body>\n";
-        result += "</html>";
-        return result;
+        result.append("<a href=\"/secured/all\">Go Back</a>\n");
+        result.append("<a href=\"/logout\">Logout</a>\n");
+        result.append("</body>\n");
+        result.append("</html>");
+        return result.toString();
     }
 
     // Renders statistics for all users.
@@ -52,8 +53,10 @@ public class ViewWinLossStatsController {
     {
         List<Users> users = usersRepository.findAll();
 
-        String personalResponse = ""; // To hold statistics specific to this user.
-        String othersResponse = "<h1>Other User's Statistics</h1>"; // To hold statistics for all users.
+        StringBuilder personalResponse = new StringBuilder(); // To hold statistics specific to this user.
+        StringBuilder othersResponse = new StringBuilder("<h1>Other User's Statistics</h1>"); // To hold statistics for all users.
+
+        int currentPlayerId = currentPlayerInfoService.findPlayerId();
 
         // Iterates through all users.
         for (Users u : users) {
@@ -74,18 +77,18 @@ public class ViewWinLossStatsController {
                 }
             }
 
-            if(currentPlayerInfoService.findPlayerId() == u.getId())
+            if(currentPlayerId == u.getId())
             {
-                personalResponse = "<h1>Statistics for " + u.getName() + "</h1>\n";
-                personalResponse += "<p> Win/Loss: " + wins + "/" + losses + "</p>";
+                personalResponse.append("<h1>Statistics for " + u.getName() + "</h1>\n");
+                personalResponse.append("<p> Win/Loss: " + wins + "/" + losses + "</p>");
             }
             else
             {
-                othersResponse += "<p>Statistics for " + u.getName() + " (win/loss): " + wins + "/" + losses + "</p>";
+                othersResponse.append("<p>Statistics for " + u.getName() + " (win/loss): " + wins + "/" + losses + "</p>");
             }
         }
         
-        String result = personalResponse + othersResponse;
+        String result = personalResponse.toString() + othersResponse.toString();
         return result;
     }
 }
