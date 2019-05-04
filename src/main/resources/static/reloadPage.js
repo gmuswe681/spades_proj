@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', function(){
     bidAmountelement = document.getElementById("bidAmount");
     cardElement = document.getElementById("card");
     if(bidAmountelement != null){
-        bidAmountelement.addEventListener("focus", stopTimeout);
+        bidAmountelement.addEventListener("change", stopTimeout);
     }
     if(cardElement != null){
-        cardElement.addEventListener("focus", stopTimeout);
+        cardElement.addEventListener("change", stopTimeout);
     }
     startTimer();
 }, false)
@@ -24,5 +24,5 @@ function reloadPage(){
 
 
 function stopTimeout(){
-    clearTimeout(timeout);
+ clearTimeout(timeout);
 }
