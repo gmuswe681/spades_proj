@@ -9,7 +9,7 @@ CREATE TABLE public.moves
     user_id integer NOT NULL,
     round_id integer NOT NULL,
     card_played character(3) NOT NULL,
-    CONSTRAINT move_pk PRIMARY KEY (move_id, game_id, round_id)
+    CONSTRAINT move_pk PRIMARY KEY (move_id)
 )
 WITH (
     OIDS = FALSE
