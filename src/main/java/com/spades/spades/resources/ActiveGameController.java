@@ -75,7 +75,7 @@ public class ActiveGameController {
             // Just prints a waiting screen if players haven't joined yet.
             if(currGame.getGameStatus().equals("o"))
             {
-                if(timer.getMessage() == "running"){
+                if(timer.getMessage().equals("running")){
                     return getResponse("This game is waiting for players.", "Waiting for a player to join. Refresh the page.");
                 } else {
                    return getResponse(timer.getMessage(), timer.getMessage());
@@ -101,7 +101,7 @@ public class ActiveGameController {
 
             if(!currGame.getGameStatus().equals("a"))
             {
-                if(timer.getMessage() == "running") {
+                if(timer.getMessage().equals("running")) {
                     return getResponse("This game is not active.", "Invalid");
                 } else {
                     return getResponse(timer.getMessage(), timer.getMessage());
@@ -151,7 +151,7 @@ public class ActiveGameController {
         }
         else
         {
-            if(timer.getMessage() == "running"){
+            if(timer.getMessage().equals("running")){
                 return getResponse("Game ID not found", "Invalid");
             }   else {
                 return getResponse(timer.getMessage(), timer.getMessage());

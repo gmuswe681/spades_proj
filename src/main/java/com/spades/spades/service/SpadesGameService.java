@@ -79,14 +79,15 @@ public class SpadesGameService {
                 String roundRender = renderRound(round, playerId);
 
                 // renders information on completed rounds, if needed.
-                if(round.getRoundNumber() > 1)
+                // Only shows it if bidding
+                if((round.getRoundNumber()) > 1 && (round.getRoundStatus().equals("b")))
                 {
                     roundRender += renderGameRoundTable(round);
                 }
 
-                if(roundRender == "")
+                if(roundRender.equals(""))
                 {
-                    LOGGER.error("RoundRender is null.");
+                    LOGGER.error("RoundRender is empty.");
                     return "Game: something went wrong";
                 }
                 return roundRender;
@@ -143,7 +144,7 @@ public class SpadesGameService {
 
                 // Creates the new Round
                 Rounds newRound = insertRoundIntoDatabase(g, roundnum);
-                spadeGamesStorage.put(new Integer(gameId), new SpadesRoundImpl());
+                spadeGamesStorage.put(Integer.valueOf(gameId), new SpadesRoundImpl());
                 return newRound;
             }
         }
@@ -249,11 +250,11 @@ public class SpadesGameService {
             // Displays whose turn it currently is.
             if(playerNum == sGame.getCurrentTurn())
             {
-                result += "<p style=\"color:#33cc33\">It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
+                result += "<p style=\"color:#33cc33\">It is Player " + sGame.getCurrentTurn() + "'s turn. (Your Turn)</p>";
             }
             else
             {
-                result += "<p>It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
+                result += "<p style=\"color:#33cc33\">It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
             }
         }
         else if(round.getRoundStatus().equals("b"))

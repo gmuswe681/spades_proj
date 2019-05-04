@@ -40,7 +40,7 @@ public class GameTimeOut {
 
 
     public String getMessage(){
-        if (message == ""){
+        if (message.equals("")){
             return "running";
         } else {
            return gameTimeout();

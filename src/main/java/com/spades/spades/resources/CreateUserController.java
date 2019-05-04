@@ -172,7 +172,7 @@ public class CreateUserController {
     }
 
     private boolean isNull(String field){
-        if(field == null | field.length() == 0){
+        if(field == null || field.length() == 0){
             return true;
         } else {
             return false;

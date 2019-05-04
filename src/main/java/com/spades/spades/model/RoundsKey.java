@@ -32,7 +32,7 @@ public class RoundsKey implements Serializable
     }
 
     public int hashCode() {
-        return (new Integer(gameId)).hashCode() + (new Integer(roundNumber)).hashCode();
+        return (Integer.valueOf(gameId)).hashCode() + (Integer.valueOf(roundNumber)).hashCode();
     }
 
     public boolean equals(Object obj) {
