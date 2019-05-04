@@ -628,7 +628,7 @@ public class SpadesGameService {
     public String renderGameRoundTable(Rounds currRound)
     {
         // Gets round information
-        List<Rounds> rounds = roundsRepository.findByGameId(currRound.getGameId());
+        List<Rounds> rounds = roundsRepository.findByGameIdOrderByRoundNumberAsc(currRound.getGameId());
         
         // Gets player information
         ArrayList<Users> players = new ArrayList<Users>();

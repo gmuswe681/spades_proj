@@ -46,27 +46,29 @@ public class ViewEndedGamesController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String findEndedGames()
     {
-        String result = "<html>\n";
-        result += "<head></head>\n";
-        result += "<body>\n";
-        result += "<h1>List of Ended Games</h1>";
+        StringBuilder result = new StringBuilder();
+        result.append("<html>\n");
+        result.append("<head></head>\n");
+        result.append("<body>\n");
+        result.append("<h1>List of Ended Games</h1>");
 
-        result += generateEndedGameLinks();
+        result.append(generateEndedGameLinks());
 
-        result += "<a href=\"/secured/all\">Go Back</a>\n";
-        result += "<a href=\"/logout\">Logout</a>\n";
-        result += "</body>\n";
-        result += "</html>";
-        return result;
+        result.append("<a href=\"/secured/all\">Go Back</a>\n");
+        result.append("<a href=\"/logout\">Logout</a>\n");
+        result.append("</body>\n");
+        result.append("</html>");
+        return result.toString();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @RequestMapping(value = "/{gameid}", method = RequestMethod.GET)
     public String retrieveSpecificGame(@PathVariable int gameid)
     {
-        String result = "<html>\n";
-        result += "<head></head>\n";
-        result += "<body>\n";
+        StringBuilder result = new StringBuilder();
+        result.append("<html>\n");
+        result.append("<head></head>\n");
+        result.append("<body>\n");
 
         Optional<Games> game = gamesRepository.findByGameId(gameid);
         if(game.isPresent())
@@ -74,16 +76,16 @@ public class ViewEndedGamesController {
             Games g = game.get();
             if(g.getGameStatus().equals("e"))
             {
-                result += renderSpecificGame(g);
+                result.append(renderSpecificGame(g));
             }
         }
 
-        result += "<a href=\"/secured/all/viewendedgames\">View More Games</a><br/>";
-        result += "<a href=\"/secured/all/\">Go Back</a><br/>\n";
-        result += "<a href=\"/logout\">Logout</a><br/>\n";
-        result += "</body>\n";
-        result += "</html>";
-        return result;
+        result.append("<a href=\"/secured/all/viewendedgames\">View More Games</a><br/>");
+        result.append("<a href=\"/secured/all/\">Go Back</a><br/>\n");
+        result.append("<a href=\"/logout\">Logout</a><br/>\n");
+        result.append("</body>\n");
+        result.append("</html>");
+        return result.toString();
     }
 
     // Returns a list of links that can be used to access detailed information about specific games.
@@ -91,18 +93,18 @@ public class ViewEndedGamesController {
     {
         List<Games> openGamesList =  gamesRepository.findByGameStatus("e");
 
-        String listResponse = "";
+        StringBuilder listResponse = new StringBuilder();
         if(openGamesList.size() > 0)
         {
             for (Games g : openGamesList) {
                 int idGame = g.getGameId();
                 String specificGameUrl = "/secured/all/viewendedgames/" + idGame;
 
-                listResponse += "<a href=\"" + specificGameUrl + "\">View Spades Game ID # " + idGame + "</a><br/>";
+                listResponse.append("<a href=\"" + specificGameUrl + "\">View Spades Game ID # " + idGame + "</a><br/>");
             }
         }
-        listResponse += "<br/>";
-        return listResponse;
+        listResponse.append("<br/>");
+        return listResponse.toString();
     }
 
     // Creates HTML output to display information about a game.
@@ -127,30 +129,31 @@ public class ViewEndedGamesController {
 
         // Displays players (and who won)
         String spadeGameName = "Spades Game #" + g.getGameId();
-        String result = "<h1>" + spadeGameName + "</h1>";
+        StringBuilder result = new StringBuilder();
+        result.append("<h1>" + spadeGameName + "</h1>");
         for(int i = 0; i < players.size(); i++)
         {
             Users u = players.get(i);
-            result += "<p>Player #" + (i+1) + ": " + u.getName();
+            result.append("<p>Player #" + (i+1) + ": " + u.getName());
             if(g.getWinnerId() == u.getId())
             {
-                result += "(WINNER)";
+                result.append("(WINNER)");
             }
-            result += "</p>";
+            result.append("</p>");
         }
 
         // Gets round information
-        List<Rounds> rounds = roundsRepository.findByGameId(g.getGameId());
+        List<Rounds> rounds = roundsRepository.findByGameIdOrderByRoundNumberAsc(g.getGameId());
 
         //Gets the rendering of the game table.
         String tableResult = spadesService.renderCompletedRounds(players, rounds);
 
         // Holds accumulated game data
-        result += tableResult;
+        result.append(tableResult);
 
         // Retrieve all game moves from the moves table.
         List<Moves> moves = movesRepository.findByGameIdOrderByMoveIdAsc(g.getGameId());
-        result += "<h2>Move List</h2>";
+        result.append("<h2>Move List</h2>");
         int moveCount = 1;
         for(Moves m : moves)
         {
@@ -166,12 +169,12 @@ public class ViewEndedGamesController {
             }
 
             // Add the move.
-            result += "<p> Move " + moveCount + ": ";
-            result += playerName + " played card " + m.getCardPlayed();
-            result += "</p>\n";
+            result.append("<p> Move " + moveCount + ": ");
+            result.append(playerName + " played card " + m.getCardPlayed());
+            result.append("</p>\n");
             moveCount++;
         }
 
-        return result;
+        return result.toString();
     }
 }
