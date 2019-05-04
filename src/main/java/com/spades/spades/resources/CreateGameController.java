@@ -80,7 +80,7 @@ public class CreateGameController {
         g.setGameId(newId);
         g.setPlayer1Id(playerID);
         g.setGameStatus("o");
-        g.setPointsToWin(100);
+        g.setPointsToWin(200);
         gamesRepository.save(g);
 
         LOGGER.info("game created with id =" + newId);
