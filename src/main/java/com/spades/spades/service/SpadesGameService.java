@@ -191,7 +191,7 @@ public class SpadesGameService {
         if(!spadeGamesStorage.containsKey(round.getGameId()))
         {
             //TODO: reconstruct a working game state?
-            spadeGamesStorage.put(new Integer(round.getGameId()), new SpadesRoundImpl());
+            spadeGamesStorage.put(Integer.valueOf(round.getGameId()), new SpadesRoundImpl());
         }
         SpadesRoundImpl sGame = spadeGamesStorage.get(round.getGameId());
 
@@ -250,11 +250,11 @@ public class SpadesGameService {
             // Displays whose turn it currently is.
             if(playerNum == sGame.getCurrentTurn())
             {
-                result += "<p style=\"color:#33cc33\">It is Player " + sGame.getCurrentTurn() + "'s turn. (Your Turn)</p>";
+                result += "<p style=\"color:#b90fbf;font-weight:bold\">It is Player " + sGame.getCurrentTurn() + "'s turn. (Your Turn)</p>";
             }
             else
             {
-                result += "<p style=\"color:#33cc33\">It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
+                result += "<p style=\"color:#b90fbf;font-weight:bold\">It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
             }
         }
         else if(round.getRoundStatus().equals("b"))
