@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.spades.spades.model.Games;
 import com.spades.spades.repository.GamesRepository;
-import com.spades.spades.repository.UsersRepository;
+import com.spades.spades.service.GetCurrentPlayerInfoService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,13 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RetrieveOpenGamesController {
 
-    private final GamesRepository gamesRepository;
-    private final UsersRepository usersRepository;
+    @Autowired
+    private GetCurrentPlayerInfoService currentPlayerInfoService;
 
-    RetrieveOpenGamesController(GamesRepository g, UsersRepository u)
+    private final GamesRepository gamesRepository;
+
+    RetrieveOpenGamesController(GamesRepository g)
     {
         gamesRepository = g;
-        usersRepository = u;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
@@ -31,6 +33,7 @@ public class RetrieveOpenGamesController {
         String result = "<html>\n";
         result += "<head></head>\n";
         result += "<body>\n";
+        result += "<h1>Open Games</h1>";
 
         result += generateOpenGames();
 
@@ -45,17 +48,23 @@ public class RetrieveOpenGamesController {
     {
         List<Games> openGamesList =  gamesRepository.findByGameStatus("o");
 
-        String listResponse = "";
+        StringBuilder listResponse = new StringBuilder();
         if(openGamesList.size() > 0)
         {
+            int playerId = currentPlayerInfoService.findPlayerId();
             for (Games g : openGamesList) {
-                listResponse += "<form>\n";
-                listResponse += "Spades Game ID#" + g.getGameId();
-                listResponse += "<input type=\"hidden\" name=\"game_id\" value=\"" + g.getGameId() + "\"/>\n";
-                listResponse += "<button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/joingame\">Join Game</button>";
-                listResponse += "</form>\n";
+                if(g.getPlayer1Id() == playerId)
+                {
+                    continue;
+                }
+
+                listResponse.append("<form>\n");
+                listResponse.append("Spades Game ID#" + g.getGameId());
+                listResponse.append("<input type=\"hidden\" name=\"game_id\" value=\"" + g.getGameId() + "\"/>\n");
+                listResponse.append("<button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/joingame\">Join Game</button>");
+                listResponse.append("</form>\n");
             }
         }
-        return listResponse;
+        return listResponse.toString();
     }
 }

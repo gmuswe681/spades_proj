@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -221,7 +222,7 @@ public class ActiveGameController {
 
                 if(card != null)
                 {
-                    card = card.toUpperCase();
+                    card = card.toUpperCase(Locale.US);
                     Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
                     Matcher matcher = VALID_CARD_REGEX.matcher(card);
                     if((matcher.find()) && (currRound.getRoundStatus().equals("a")))
