@@ -196,76 +196,77 @@ public class SpadesGameService {
         SpadesRoundImpl sGame = spadeGamesStorage.get(round.getGameId());
 
         // Displays the current round.
-        String result = "<h1>Round # " + round.getRoundNumber() + "</h1>\n";
+        StringBuilder result = new StringBuilder();
+        result.append("<h1>Round # " + round.getRoundNumber() + "</h1>\n");
 
         int playerNum = 0;
         // Display which player the user is.
         if(playerId == round.getPlayer1Id())
         {
-            result += "<p>You are Player 1.</p>";
+            result.append("<p>You are Player 1.</p>");
             playerNum = 1;
         }
         else if(playerId == round.getPlayer2Id())
         {
-            result += "<p>You are Player 2.</p>";
+            result.append("<p>You are Player 2.</p>");
             playerNum = 2;
         }
 
         // Displays the hand for each player.
-        result += "<p>Your hand:</p>\n";
+        result.append("<p>Your hand:</p>\n");
         if(playerId == round.getPlayer1Id())
         {
-            result += "<p>";
+            result.append("<p>");
             Hand p1Hand = sGame.getHand1();
             for(String s : p1Hand.getHand())
             {
-                result += s + " ";
+                result.append(s + " ");
             }
-            result += "</p>\n";
+            result.append("</p>\n");
         }
         else if(playerId == round.getPlayer2Id())
         {
-            result += "<p>";
+            result.append("<p>");
             Hand p2Hand = sGame.getHand2();
             for(String s : p2Hand.getHand())
             {
-                result += s + " ";
+                result.append(s + " ");
             }
-            result += "</p>\n";
+            result.append("</p>\n");
         }
 
         if(round.getRoundStatus().equals("a"))
         {
             // Displays the scoring for each player.
-            result += "<p>Player 1's Bid: " + round.getPlayer1Bid() + "</p>";
-            result += "<p>Player 1's Actual: " + round.getPlayer1Actual() + "</p>";
-            result += "<p>Player 2's Bid: " + round.getPlayer2Bid() + "</p>";
-            result += "<p>Player 2's Actual: " + round.getPlayer2Actual() + "</p>";
-            result += "<br/>";
+            result.append("<p>Player 1's Bid: " + round.getPlayer1Bid() + "</p>");
+            result.append("<p>Player 1's Actual: " + round.getPlayer1Actual() + "</p>");
+            result.append("<p>Player 2's Bid: " + round.getPlayer2Bid() + "</p>");
+            result.append("<p>Player 2's Actual: " + round.getPlayer2Actual() + "</p>");
+            result.append("<br/>");
 
             // Display the current cards played.
-            result += "<p>Player 1's Card: " + sGame.getPlayer1Card() + "</p>";
-            result += "<p>Player 2's Card: " + sGame.getPlayer2Card() + "</p>";
+            result.append("<p>Player 1's Card: " + sGame.getPlayer1Card() + "</p>");
+            result.append("<p>Player 2's Card: " + sGame.getPlayer2Card() + "</p>");
 
             // Displays whose turn it currently is.
             if(playerNum == sGame.getCurrentTurn())
             {
-                result += "<p style=\"color:#b90fbf;font-weight:bold\">It is Player " + sGame.getCurrentTurn() + "'s turn. (Your Turn)</p>";
+                result.append("<p style=\"color:#b90fbf;font-weight:bold\">It is Player " + sGame.getCurrentTurn() + "'s turn. (Your Turn)</p>");
             }
             else
             {
-                result += "<p style=\"color:#b90fbf;font-weight:bold\">It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
+                result.append("<p style=\"color:#b90fbf;font-weight:bold\">It is Player " + sGame.getCurrentTurn() + "'s turn.</p>");
             }
         }
         else if(round.getRoundStatus().equals("b"))
         {
             if((playerId == round.getPlayer1Id()) && (round.getPlayer1Bid() >= 0))
             {
-                result += "<p>Your current Bid: " + round.getPlayer1Bid() + "</p>";
+                result.append("<p>Your current Bid: " + round.getPlayer1Bid() + "</p>");
             }
             else if(playerId == round.getPlayer2Id() && (round.getPlayer2Bid() >= 0))
             {
-                result += "<p>Your current Bid: " + round.getPlayer2Bid() + "</p>";
+                result.append("<p>Your current Bid: " + round.getPlayer2Bid() + "</p>");
             }
         }
 
@@ -279,7 +280,7 @@ public class SpadesGameService {
             }
         }
 
-        return result;
+        return result.toString();
     }
 
     public Rounds getCurrentRoundStatus(int gameId)
@@ -655,18 +656,19 @@ public class SpadesGameService {
         }
 
         // Creates table headers
-        String tableResult = "<table border=\"1\">";
-        tableResult += "<tr>";
-        tableResult += "<th>Round</th>";
+        StringBuilder tableResult = new StringBuilder();
+        tableResult.append("<table border=\"1\">");
+        tableResult.append("<tr>");
+        tableResult.append("<th>Round</th>");
         for(int i = 0; i < players.size(); i++)
         {
             String playerString = players.get(i).getName();
-            tableResult += "<th>" + playerString + "'s Bid</th>";
-            tableResult += "<th>" + playerString + "'s Actual</th>";
-            tableResult += "<th>" + playerString + "'s Score</th>";
-            tableResult += "<th>" + playerString + "'s Bags</th>";
+            tableResult.append("<th>" + playerString + "'s Bid</th>");
+            tableResult.append("<th>" + playerString + "'s Actual</th>");
+            tableResult.append("<th>" + playerString + "'s Score</th>");
+            tableResult.append("<th>" + playerString + "'s Bags</th>");
         }
-        tableResult += "</tr>\n";
+        tableResult.append("</tr>\n");
 
         // Holds accumulated game data
         ArrayList<Integer> totalBags = new ArrayList<Integer>(players.size());
@@ -685,8 +687,8 @@ public class SpadesGameService {
             }
 
             // Gets the round number
-            tableResult += "<tr>";
-            tableResult += "<td>" + r.getRoundNumber() + "</td>";
+            tableResult.append("<tr>");
+            tableResult.append("<td>" + r.getRoundNumber() + "</td>");
 
             // Creates a list containing round information for each player
             ArrayList<Integer> roundBid = new ArrayList<Integer>(players.size());
@@ -716,17 +718,17 @@ public class SpadesGameService {
                 totalBags.set(i, accumulatedBags + bags);
 
                 // Adds to table display
-                tableResult += "<td>" + roundBid.get(i) + "</td>";
-                tableResult += "<td>" + roundActual.get(i) + "</td>";
-                tableResult += "<td>" + points + "</td>";
-                tableResult += "<td>" + bags + "</td>";
+                tableResult.append("<td>" + roundBid.get(i) + "</td>");
+                tableResult.append("<td>" + roundActual.get(i) + "</td>");
+                tableResult.append("<td>" + points + "</td>");
+                tableResult.append("<td>" + bags + "</td>");
             }
 
-            tableResult += "</tr>\n";
+            tableResult.append("</tr>\n");
         }
-        tableResult += "</table>";
+        tableResult.append("</table>");
 
-        String aggregateResults = "";
+        StringBuilder aggregateResults = new StringBuilder();
         // Now prints the aggregate results for each player.
         for(int i = 0; i < players.size(); i++)
         {
@@ -735,13 +737,13 @@ public class SpadesGameService {
             int finalPoints =  rawPoints - ((numBags / 10) * 100);
 
             String playerString = players.get(i).getName();
-            aggregateResults += "<p>" + playerString + " Raw Score: " + rawPoints + ",";
-            aggregateResults += " Total Bags: " + numBags + "<br/>\n";
-            aggregateResults += playerString + " Adjusted Score (subtract bags): " + finalPoints + "\n";
-            aggregateResults += "</p>\n";
+            aggregateResults.append("<p>" + playerString + " Raw Score: " + rawPoints + ",");
+            aggregateResults.append(" Total Bags: " + numBags + "<br/>\n");
+            aggregateResults.append(playerString + " Adjusted Score (subtract bags): " + finalPoints + "\n");
+            aggregateResults.append("</p>\n");
         }
 
-        return tableResult + aggregateResults;
+        return tableResult.toString() + aggregateResults.toString();
     }
 }
 
