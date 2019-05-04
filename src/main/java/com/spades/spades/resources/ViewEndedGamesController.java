@@ -142,19 +142,8 @@ public class ViewEndedGamesController {
         // Gets round information
         List<Rounds> rounds = roundsRepository.findByGameId(g.getGameId());
 
-        // Creates table headers
-        String tableResult = "<table border=\"1\">";
-        tableResult += "<tr>";
-        tableResult += "<th>Round</th>";
-        for(int i = 0; i < players.size(); i++)
-        {
-            String playerString = players.get(i).getName();
-            tableResult += "<th>" + playerString + "'s Bid</th>";
-            tableResult += "<th>" + playerString + "'s Actual</th>";
-            tableResult += "<th>" + playerString + "'s Score</th>";
-            tableResult += "<th>" + playerString + "'s Bags</th>";
-        }
-        tableResult += "</tr>\n";
+        //Gets the rendering of the game table.
+        String tableResult = spadesService.renderCompletedRounds(players, rounds);
 
         // Holds accumulated game data
         ArrayList<Integer> totalBags = new ArrayList<Integer>(players.size());
@@ -167,10 +156,6 @@ public class ViewEndedGamesController {
 
         for(Rounds r : rounds)
         {
-            // Gets the round number
-            tableResult += "<tr>";
-            tableResult += "<td>" + r.getRoundNumber() + "</td>";
-
             // Creates a list containing round information for each player
             ArrayList<Integer> roundBid = new ArrayList<Integer>(players.size());
             ArrayList<Integer> roundActual = new ArrayList<Integer>(players.size());
@@ -190,17 +175,8 @@ public class ViewEndedGamesController {
                 totalScore.set(i, accumulatedPoints + points);
                 int accumulatedBags = totalBags.get(i);
                 totalBags.set(i, accumulatedBags + bags);
-
-                // Adds to table display
-                tableResult += "<td>" + roundBid.get(i) + "</td>";
-                tableResult += "<td>" + roundActual.get(i) + "</td>";
-                tableResult += "<td>" + points + "</td>";
-                tableResult += "<td>" + bags + "</td>";
             }
-
-            tableResult += "</tr>\n";
         }
-        tableResult += "</table>";
 
         result += tableResult;
 

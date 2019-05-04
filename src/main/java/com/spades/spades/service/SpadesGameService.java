@@ -12,13 +12,16 @@ import com.spades.spades.model.Moves;
 import com.spades.spades.repository.GamesRepository;
 
 import com.spades.spades.model.Rounds;
+import com.spades.spades.model.Users;
 import com.spades.spades.repository.MovesRepository;
 import com.spades.spades.repository.RoundsRepository;
+import com.spades.spades.repository.UsersRepository;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,9 @@ public class SpadesGameService {
 
     private Map<Integer, SpadesRoundImpl> spadeGamesStorage;
 
+    @Autowired
+    private UsersRepository usersRepository;
+    
     @Autowired
     private GamesRepository gamesRepository;
 
@@ -71,6 +77,12 @@ public class SpadesGameService {
                 }
 
                 String roundRender = renderRound(round, playerId);
+
+                // renders information on completed rounds, if needed.
+                if(round.getRoundNumber() > 1)
+                {
+                    roundRender += renderGameRoundTable(round);
+                }
 
                 if(roundRender == "")
                 {
@@ -594,6 +606,103 @@ public class SpadesGameService {
             g.setGameStatus("e");
             gamesRepository.save(g);
         }
+    }
+
+    public String renderGameRoundTable(Rounds currRound)
+    {
+        // Gets round information
+        List<Rounds> rounds = roundsRepository.findByGameId(currRound.getGameId());
+        
+        // Gets player information
+        ArrayList<Users> players = new ArrayList<Users>();
+        Optional<Users> player1 = usersRepository.findById(currRound.getPlayer1Id());
+        Optional<Users> player2 = usersRepository.findById(currRound.getPlayer2Id());
+        if((!player1.isPresent()) || (!player2.isPresent()))
+        {
+            return "";
+        }
+        players.add(player1.get());
+        players.add(player2.get());
+
+        return renderCompletedRounds(players, rounds);
+    }
+
+    /****
+     * Renders an HTML table to show statistics for a completed round.
+     ****/
+    public String renderCompletedRounds(List<Users> players, List<Rounds> rounds)
+    {
+        if(players == null || rounds == null)
+        {
+            return "";
+        }
+
+        // Creates table headers
+        String tableResult = "<table border=\"1\">";
+        tableResult += "<tr>";
+        tableResult += "<th>Round</th>";
+        for(int i = 0; i < players.size(); i++)
+        {
+            String playerString = players.get(i).getName();
+            tableResult += "<th>" + playerString + "'s Bid</th>";
+            tableResult += "<th>" + playerString + "'s Actual</th>";
+            tableResult += "<th>" + playerString + "'s Score</th>";
+            tableResult += "<th>" + playerString + "'s Bags</th>";
+        }
+        tableResult += "</tr>\n";
+
+        // Holds accumulated game data
+        ArrayList<Integer> totalBags = new ArrayList<Integer>(players.size());
+        ArrayList<Integer> totalScore = new ArrayList<Integer>(players.size());
+        for(int i = 0; i < players.size(); i++)
+        {
+            totalBags.add(0);
+            totalScore.add(0);
+        }
+
+        for(Rounds r : rounds)
+        {
+            if(!r.getRoundStatus().equals("e"))
+            {
+                continue;
+            }
+
+            // Gets the round number
+            tableResult += "<tr>";
+            tableResult += "<td>" + r.getRoundNumber() + "</td>";
+
+            // Creates a list containing round information for each player
+            ArrayList<Integer> roundBid = new ArrayList<Integer>(players.size());
+            ArrayList<Integer> roundActual = new ArrayList<Integer>(players.size());
+            roundBid.add(r.getPlayer1Bid());
+            roundBid.add(r.getPlayer2Bid());
+            roundActual.add(r.getPlayer1Actual());
+            roundActual.add(r.getPlayer2Actual());
+            
+            // Processes data for each player
+            for(int i = 0; i < players.size(); i++)
+            {
+                int points = calculatePoints(roundBid.get(i), roundActual.get(i));
+                int bags = calculateBags(roundBid.get(i), roundActual.get(i));
+
+                // Updates accumulated data for a player.
+                //int accumulatedPoints = totalScore.get(i);
+                //totalScore.set(i, accumulatedPoints + points);
+                //int accumulatedBags = totalBags.get(i);
+                //totalBags.set(i, accumulatedBags + bags);
+
+                // Adds to table display
+                tableResult += "<td>" + roundBid.get(i) + "</td>";
+                tableResult += "<td>" + roundActual.get(i) + "</td>";
+                tableResult += "<td>" + points + "</td>";
+                tableResult += "<td>" + bags + "</td>";
+            }
+
+            tableResult += "</tr>\n";
+        }
+        tableResult += "</table>";
+
+        return tableResult;
     }
 }
 
