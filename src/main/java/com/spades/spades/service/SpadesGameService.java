@@ -197,14 +197,17 @@ public class SpadesGameService {
         // Displays the current round.
         String result = "<h1>Round # " + round.getRoundNumber() + "</h1>\n";
 
+        int playerNum = 0;
         // Display which player the user is.
         if(playerId == round.getPlayer1Id())
         {
             result += "<p>You are Player 1.</p>";
+            playerNum = 1;
         }
         else if(playerId == round.getPlayer2Id())
         {
             result += "<p>You are Player 2.</p>";
+            playerNum = 2;
         }
 
         // Displays the hand for each player.
@@ -244,7 +247,14 @@ public class SpadesGameService {
             result += "<p>Player 2's Card: " + sGame.getPlayer2Card() + "</p>";
 
             // Displays whose turn it currently is.
-            result += "<p>It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
+            if(playerNum == sGame.getCurrentTurn())
+            {
+                result += "<p style=\"color:#33cc33\">It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
+            }
+            else
+            {
+                result += "<p>It is Player " + sGame.getCurrentTurn() + "'s turn.</p>";
+            }
         }
         else if(round.getRoundStatus().equals("b"))
         {

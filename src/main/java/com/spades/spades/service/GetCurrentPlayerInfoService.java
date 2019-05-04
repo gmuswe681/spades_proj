@@ -37,4 +37,12 @@ public class GetCurrentPlayerInfoService {
 
         return -1;
     }
+
+    // Retrieves the current player's name.
+    public String findPlayerName()
+    {
+        Authentication a = authenticationService.getAuthentication();
+        String user = a.getName();
+        return user;
+    }
 }

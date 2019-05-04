@@ -50,7 +50,8 @@ public class HelloResource {
         int playerID1 = currentPlayerInfoService.findPlayerId();
         String buttonOrLink = "";
         if(playerID1 >= 0) {
-            LOGGER.info(playerID1 + " has logged in at " + System.currentTimeMillis());
+            LOGGER.info(currentPlayerInfoService.findPlayerName() + 
+                " has accessed the application " + System.currentTimeMillis());
             if (getUserOpenGames(playerID1) != -1) {
                 int gameId = getUserOpenGames(playerID1);
                 buttonOrLink = "<a href=\"/secured/all/game/" + gameId + "\">Go to Existing Open Game</a>\n";
@@ -80,7 +81,7 @@ public class HelloResource {
             List<Games> openGames = gamesRepository.findOpenGamesForUser(userId);
             if(openGames.size() == 0)
             {
-                LOGGER.error("No open Games.");
+                LOGGER.debug("No open Games.");
                 return -1;
             }
             return openGames.get(0).getGameId();
