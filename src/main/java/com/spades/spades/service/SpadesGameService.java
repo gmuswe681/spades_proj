@@ -167,6 +167,7 @@ public class SpadesGameService {
             newRound.setPlayer2Id(game.getPlayer2Id());
             newRound.setPlayer2Bid(-1);
             newRound.setRoundStatus("b"); // People are bidding.
+            newRound.setForfeitStatus(false);
             return roundsRepository.save(newRound);
         }
 
@@ -579,7 +580,12 @@ public class SpadesGameService {
             return;
         }
 
+        // Sets player's actual scores to a negative value
+        // to indicate a 'forfeit'
+        r.setPlayer1Actual(-1);
+        r.setPlayer2Actual(-1);
         r.setRoundStatus("e");
+        r.setForfeitStatus(true);
         roundsRepository.save(r);
 
         if(r.getPlayer1Bid() == -1)
@@ -682,14 +688,21 @@ public class SpadesGameService {
             // Processes data for each player
             for(int i = 0; i < players.size(); i++)
             {
-                int points = calculatePoints(roundBid.get(i), roundActual.get(i));
-                int bags = calculateBags(roundBid.get(i), roundActual.get(i));
+                int points = 0;
+                int bags = 0;
+
+                // Ignore calculations in case of forfeit (not valid)
+                if(r.getForfeitStatus() != true)
+                {
+                    points = calculatePoints(roundBid.get(i), roundActual.get(i));
+                    bags = calculateBags(roundBid.get(i), roundActual.get(i));
+                }
 
                 // Updates accumulated data for a player.
-                //int accumulatedPoints = totalScore.get(i);
-                //totalScore.set(i, accumulatedPoints + points);
-                //int accumulatedBags = totalBags.get(i);
-                //totalBags.set(i, accumulatedBags + bags);
+                int accumulatedPoints = totalScore.get(i);
+                totalScore.set(i, accumulatedPoints + points);
+                int accumulatedBags = totalBags.get(i);
+                totalBags.set(i, accumulatedBags + bags);
 
                 // Adds to table display
                 tableResult += "<td>" + roundBid.get(i) + "</td>";
@@ -702,7 +715,22 @@ public class SpadesGameService {
         }
         tableResult += "</table>";
 
-        return tableResult;
+        String aggregateResults = "";
+        // Now prints the aggregate results for each player.
+        for(int i = 0; i < players.size(); i++)
+        {
+            int rawPoints = totalScore.get(i);
+            int numBags = totalBags.get(i);
+            int finalPoints =  rawPoints - ((numBags / 10) * 100);
+
+            String playerString = players.get(i).getName();
+            aggregateResults += "<p>" + playerString + " Raw Score: " + rawPoints + ",";
+            aggregateResults += " Total Bags: " + numBags + "<br/>\n";
+            aggregateResults += playerString + " Adjusted Score (subtract bags): " + finalPoints + "\n";
+            aggregateResults += "</p>\n";
+        }
+
+        return tableResult + aggregateResults;
     }
 }
 

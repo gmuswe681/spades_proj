@@ -29,6 +29,8 @@ public class Rounds {
     private int player2Actual;
     @Column(name = "round_status")
     private String roundStatus;
+    @Column(name = "forfeit_status")
+    private boolean forfeitStatus;
 
     public Rounds(){}
 
@@ -113,5 +115,13 @@ public class Rounds {
 
     public void setRoundStatus(String roundStatus) {
         this.roundStatus = roundStatus;
+    }
+
+    public boolean getForfeitStatus() {
+        return forfeitStatus;
+    }
+
+    public void setForfeitStatus(boolean forfeitStatus) {
+        this.forfeitStatus = forfeitStatus;
     }
 }

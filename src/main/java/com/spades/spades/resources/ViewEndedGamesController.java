@@ -146,54 +146,7 @@ public class ViewEndedGamesController {
         String tableResult = spadesService.renderCompletedRounds(players, rounds);
 
         // Holds accumulated game data
-        ArrayList<Integer> totalBags = new ArrayList<Integer>(players.size());
-        ArrayList<Integer> totalScore = new ArrayList<Integer>(players.size());
-        for(int i = 0; i < players.size(); i++)
-        {
-            totalBags.add(0);
-            totalScore.add(0);
-        }
-
-        for(Rounds r : rounds)
-        {
-            // Creates a list containing round information for each player
-            ArrayList<Integer> roundBid = new ArrayList<Integer>(players.size());
-            ArrayList<Integer> roundActual = new ArrayList<Integer>(players.size());
-            roundBid.add(r.getPlayer1Bid());
-            roundBid.add(r.getPlayer2Bid());
-            roundActual.add(r.getPlayer1Actual());
-            roundActual.add(r.getPlayer2Actual());
-            
-            // Processes data for each player
-            for(int i = 0; i < players.size(); i++)
-            {
-                int points = spadesService.calculatePoints(roundBid.get(i), roundActual.get(i));
-                int bags = spadesService.calculateBags(roundBid.get(i), roundActual.get(i));
-
-                // Updates accumulated data for a player.
-                int accumulatedPoints = totalScore.get(i);
-                totalScore.set(i, accumulatedPoints + points);
-                int accumulatedBags = totalBags.get(i);
-                totalBags.set(i, accumulatedBags + bags);
-            }
-        }
-
         result += tableResult;
-
-        // Now prints the aggregate results for each player.
-        for(int i = 0; i < players.size(); i++)
-        {
-            int rawPoints = totalScore.get(i);
-            int numBags = totalBags.get(i);
-            int finalPoints =  rawPoints - ((numBags / 10) * 100);
-
-            String playerString = players.get(i).getName();
-            result += "<p>" + playerString + " Raw Score: " + rawPoints + "<br/>\n";
-            result += playerString + " Total Bags: " + numBags + "<br/>\n";
-            result += playerString + " Adjusted Score: " + finalPoints + "<br/>\n";
-            result += "</p>\n";
-        }
-
 
         // Retrieve all game moves from the moves table.
         List<Moves> moves = movesRepository.findByGameIdOrderByMoveIdAsc(g.getGameId());
