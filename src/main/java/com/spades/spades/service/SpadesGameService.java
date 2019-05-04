@@ -125,7 +125,28 @@ public class SpadesGameService {
                 Optional<Rounds> currRound = roundsRepository.findByGameIdAndRoundStatusNot(gameId, "e");
                 if(currRound.isPresent())
                 {
-                    return currRound.get();
+                    Rounds r = currRound.get();
+                    if(!spadeGamesStorage.containsKey(gameId))
+                    {
+                        // Software doesn't contain a valid representation of the current round.
+                        // In this case, need to rollback the database
+                        // This is a recovery scenario (if the application crashed or was shut down
+                        // during a game).
+
+                        // Readjusts the moves database.
+                        movesRepository.deleteByGameIdAndRoundId(gameId, r.getRoundNumber());
+
+                        // Resets the round 
+                        r.setPlayer1Bid(-1);
+                        r.setPlayer1Actual(0);
+                        r.setPlayer2Bid(-1);
+                        r.setPlayer2Actual(0);
+                        r.setRoundStatus("b"); // People are bidding.
+                        r = roundsRepository.save(r);
+                        spadeGamesStorage.put(Integer.valueOf(gameId), new SpadesRoundImpl());
+                    }
+
+                    return r;
                 }
 
                 // No round is in progress, so find out the next round number
@@ -187,12 +208,6 @@ public class SpadesGameService {
             return "";
         }
 
-        // Gets the current game state from software
-        if(!spadeGamesStorage.containsKey(round.getGameId()))
-        {
-            //TODO: reconstruct a working game state?
-            spadeGamesStorage.put(Integer.valueOf(round.getGameId()), new SpadesRoundImpl());
-        }
         SpadesRoundImpl sGame = spadeGamesStorage.get(round.getGameId());
 
         // Displays the current round.
