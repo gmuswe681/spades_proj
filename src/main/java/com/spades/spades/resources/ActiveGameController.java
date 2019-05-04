@@ -67,7 +67,8 @@ public class ActiveGameController {
         GameTimeOut timer = gameTimerService.getTimer(gameid);
         if(timer == null)
         {
-            timer = new GameTimeOut(30000L);
+            timer = new GameTimeOut(300000L);
+            gameTimerService.setTimer(gameid, timer);
         }
         if(foundGame.isPresent())
         {
@@ -79,7 +80,8 @@ public class ActiveGameController {
                 if(timer.getMessage().equals("running")){
                     return getResponse("This game is waiting for players.", "Waiting for a player to join. Refresh the page.");
                 } else {
-                   return getResponse(timer.getMessage(), timer.getMessage());
+                    gamesRepository.delete(currGame);
+                    return getResponse(timer.getMessage(), timer.getMessage());
                 }
 
             }

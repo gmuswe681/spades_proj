@@ -17,7 +17,7 @@ public class HandTimeOut {
         hasTimedOut = false;
         TimerTask task = new TimerTask() {
             public void run() {
-                LOGGER.error("Your game has timed out waiting on a second player.");
+                LOGGER.error("Your hand has timed out waiting on a second player.");
 
                 handTimeout();
             }

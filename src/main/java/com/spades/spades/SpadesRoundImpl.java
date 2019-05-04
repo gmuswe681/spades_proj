@@ -374,6 +374,13 @@ public class SpadesRoundImpl {
         player1Card = "";
         player2Card = "";
         
+        // Cancels the timer if the Round is complete
+        if((hand1.returnHandSize()) == 0 && 
+        (hand2.returnHandSize() == 0) )
+        {
+            timer.cancelTimeout();
+        }
+
         return winner;
     }
 
