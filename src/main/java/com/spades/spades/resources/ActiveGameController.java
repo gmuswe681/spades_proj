@@ -141,7 +141,7 @@ public class ActiveGameController {
             }
             else
             {
-                if(timer.getMessage() == "running") {
+                if(timer.getMessage().equals("running")) {
                     return getResponse("This user is not part of this game.", "Invalid");
                 } else {
                     return getResponse(timer.getMessage(), timer.getMessage());

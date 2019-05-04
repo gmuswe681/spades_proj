@@ -8,6 +8,7 @@ package com.spades.spades;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 public class SpadesRoundImpl {
 
@@ -399,13 +400,13 @@ public class SpadesRoundImpl {
         cardVals.put("K", 13);
         cardVals.put("A", 14);
 
-        Iterator<String> iter = cardVals.keySet().iterator();
+        Iterator<Entry<String, Integer>> iter = cardVals.entrySet().iterator();
         while(iter.hasNext())
         {
-            String val = iter.next();
-            if(card.contains(val))
+            Entry<String, Integer> val = iter.next();
+            if(card.contains(val.getKey()))
             {
-                return cardVals.get(val);
+                return val.getValue().intValue();
             }
         }
 
@@ -445,7 +446,10 @@ public class SpadesRoundImpl {
     {
         if((timer == null) || !(timer.getTimedOut()))
         {
-            timer.cancelTimeout();
+            if(timer != null)   
+            {
+                timer.cancelTimeout();
+            }
             timer = new HandTimeOut(180000L);
     
         }
