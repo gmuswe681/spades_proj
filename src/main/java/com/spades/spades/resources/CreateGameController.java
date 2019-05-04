@@ -85,8 +85,8 @@ public class CreateGameController {
 
         LOGGER.info("game created with id =" + newId);
 
-        //Start timer to wait on 2nd player
-        GameTimeOut gameTimeOut = new GameTimeOut(20000L);
+        //Start timer to wait on 2nd player set at 5 minutes
+        GameTimeOut gameTimeOut = new GameTimeOut(300000L);
         gameTimerService.setTimer(newId, gameTimeOut);
         return newId;
     }
