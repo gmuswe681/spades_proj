@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class GenerateGameIdService {
+public final class GenerateGameIdService {
     
     @Autowired
     private GamesRepository gamesRepository;

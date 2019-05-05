@@ -4,7 +4,7 @@ import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Stack;
 
-public class Deck {
+public final class Deck {
 
     //Club= C; Diamonds = D; Hearts = H; Spades = S;
     private final static String[] SUITS = {

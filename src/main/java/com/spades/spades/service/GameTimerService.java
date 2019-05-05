@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class GameTimerService {
+public final class GameTimerService {
 
     private static Map<Integer, GameTimeOut> timerMap = new HashMap<>();
 

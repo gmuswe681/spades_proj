@@ -6,7 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class GameTimeOut {
+public final class GameTimeOut {
     private static final Logger LOGGER = LogManager.getLogger("GameTimeOut.class");
     private Timer timer = new Timer("GameTimer");
     private String message;

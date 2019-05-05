@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class HandTimerService {
+public final class HandTimerService {
     private static Map<Integer, HandTimeOut> timerMap = new HashMap<>();
 
     public HandTimeOut getTimer(Integer id){

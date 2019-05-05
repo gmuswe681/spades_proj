@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  ***/
 
 @Service
-public class GetCurrentPlayerInfoService {
+public final class GetCurrentPlayerInfoService {
 
     @Autowired
     private GetAuthenticationService authenticationService;

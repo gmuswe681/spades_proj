@@ -30,7 +30,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SpadesGameService {
+public final class SpadesGameService {
 
     private static final Logger LOGGER = LogManager.getLogger("SpadesGameService.class");
 

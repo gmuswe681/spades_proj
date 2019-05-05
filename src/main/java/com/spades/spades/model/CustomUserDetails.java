@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class CustomUserDetails extends Users implements UserDetails {
+public final class CustomUserDetails extends Users implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 

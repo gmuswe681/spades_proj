@@ -4,7 +4,7 @@ package com.spades.spades;
 
 import java.util.ArrayList;
 
-public class Hand {
+public final class Hand {
 
     private  ArrayList<String> hand;
     private static final Integer maxHandSize = 13;
