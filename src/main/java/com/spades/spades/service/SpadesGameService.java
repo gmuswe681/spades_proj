@@ -607,10 +607,8 @@ public final class SpadesGameService {
             return;
         }
 
-        // Sets player's actual scores to a negative value
+        // Sets forfeit flag
         // to indicate a 'forfeit'
-        r.setPlayer1Actual(-1);
-        r.setPlayer2Actual(-1);
         r.setRoundStatus("e");
         r.setForfeitStatus(true);
         roundsRepository.save(r);

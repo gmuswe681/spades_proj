@@ -124,7 +124,11 @@ public class ActiveGameController {
 
                 // Renders input fields based on the current state of the game.
                 Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
-                if(currRound.getRoundStatus().equals("b"))
+                if(currRound == null)
+                {
+                    // If null, wait for reload. DOn't generate inputs.
+                }
+                else if(currRound.getRoundStatus().equals("b"))
                 {
                     // Renders HTML to submit bidding amounts.
                     response += "<form>";
