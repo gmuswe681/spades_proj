@@ -13,25 +13,25 @@ document.addEventListener('DOMContentLoaded', function(){
         //cardElement.addEventListener("focus", checkForValue);
     }
     startTimer();
-}, false)
+}, false);
 
 function startTimer() {
     timeout = setTimeout(reloadPage, 7000);
 }
 
 function reloadPage(){
-    console.log('reload method')
+    console.log('reload method');
     location.reload();
 }
 
 
 function stopTimeout(){
-    console.log('stop timeout method')
+    console.log('stop timeout method');
  clearTimeout(timeout);
 }
 
 function checkForValue(){
-    console.log('check for value')
+    console.log('check for value');
     if(cardElement != null){
         if(cardElement.value != ""){
             stopTimeout();
@@ -39,9 +39,9 @@ function checkForValue(){
     }
 
     if(bidAmountelement != null){
-        console.log('a')
+        console.log('a');
         if(bidAmountelement.value != ""){
-            console.log('b')
+            console.log('b');
             stopTimeout();
         }
     }

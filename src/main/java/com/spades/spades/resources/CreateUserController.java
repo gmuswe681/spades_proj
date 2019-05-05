@@ -74,7 +74,8 @@ public class CreateUserController {
             repository.save(newUser);
             message.append("User was successfully created.");
         }
-        String result = "<!DOCTYPE html>\n<html>\n";
+        String result = "<!DOCTYPE html>\n";
+        result +=  "<html lang=\"en\">\n";
         result += "<head><meta charset=\"UTF-8\"/></head>\n";
         result += "<body>\n";
         result += "<p>" + message + "</p>\n";
@@ -92,12 +93,8 @@ public class CreateUserController {
         Optional<Users> listUser = repository.findByName(name);
 
         // User wasn't found
-        if(!listUser.isPresent())
-        {
-            return false;
-        }
+        return listUser.isPresent();
 
-        return true;
     }
 
     private StringBuffer validateUser(String userName, String lastName, String email, String password){
@@ -172,11 +169,7 @@ public class CreateUserController {
     }
 
     private boolean isNull(String field){
-        if(field == null || field.length() == 0){
-            return true;
-        } else {
-            return false;
-        }
+        return field == null || field.length() == 0;
      }
 
 
