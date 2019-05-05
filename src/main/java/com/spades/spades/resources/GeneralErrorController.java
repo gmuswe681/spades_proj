@@ -18,8 +18,8 @@ public class GeneralErrorController implements ErrorController {
         Exception exception = (Exception) request.getAttribute("javax.servlet.error.exception");
 
 
-        String result = "<html>\n";
-        result += "<head></head>\n";
+        String result = "<!DOCTYPE html>\n<html>\n";
+        result += "<head><meta charset=\"UTF-8\"/> </head>\n";
         result += "<body>\n";
         result += "<p>Sorry, an error occurred on our end.</p>\n";
         result += "<a href=\"/\">Go to homepage</a>\n";

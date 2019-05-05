@@ -103,8 +103,8 @@ public class CreateGameController {
 
     private String generateHtmlResponse(String s)
     {
-        String result = "<html>\n";
-        result += "<head></head>\n";
+        String result = "<!DOCTYPE html>\n<html>\n";
+        result += "<head><meta charset=\"UTF-8\"/></head>\n";
         result += "<body>\n";
 
         result += s + "\n";

@@ -105,8 +105,8 @@ public class JoinGameController {
     private void generateHtmlResponse(HttpServletResponse resp, String s)
         throws IOException
     {
-        String result = "<html>\n";
-        result += "<head></head>\n";
+        String result = "<!DOCTYPE html>\n<html>\n";
+        result += "<head><meta charset=\"UTF-8\"/></head>\n";
         result += "<body>\n";
 
         result += s + "\n";

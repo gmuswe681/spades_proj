@@ -74,8 +74,8 @@ public class CreateUserController {
             repository.save(newUser);
             message.append("User was successfully created.");
         }
-        String result = "<html>\n";
-        result += "<head></head>\n";
+        String result = "<!DOCTYPE html>\n<html>\n";
+        result += "<head><meta charset=\"UTF-8\"/></head>\n";
         result += "<body>\n";
         result += "<p>" + message + "</p>\n";
         result += "<a href=\"/\">Go to Homepage</a>\n";

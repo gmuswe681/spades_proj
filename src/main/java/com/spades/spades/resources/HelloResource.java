@@ -31,8 +31,9 @@ public class HelloResource {
 
     @GetMapping("/")
     public String hello() {
-      String result = "<html>\n";
-        result += "<head></head>\n";
+      String result = "<!DOCTYPE html>\n";
+        result += "<html>\n";
+        result += "<head><meta charset=\"UTF-8\"/></head>\n";
         result += "<body>\n";
         result += "<p>Welcome to Spades. Please Create a User or Login.</p>\n";
         result += "<a href=\"/secured/all\">Login</a>\n";
@@ -63,8 +64,8 @@ public class HelloResource {
             }
         }
 
-        String result = "<html>\n";
-        result += "<head></head>\n";
+        String result = "<!DOCTYPE html>\n<html>\n";
+        result += "<head><meta charset=\"UTF-8\"/> </head>\n";
         result += "<body>\n";
         result += "<p>Hello! What Spades related thing would you like to do?</p>\n";
 

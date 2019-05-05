@@ -35,8 +35,8 @@ public class ViewWinLossStatsController {
     public String viewStatistics()
     {
         StringBuilder result = new StringBuilder();
-        result.append("<html>\n");
-        result.append("<head></head>\n");
+        result.append("<!DOCTYPE html><html>\n");
+        result.append("<head><meta charset=\"UTF-8\"/></head>\n");
         result.append("<body>\n");
 
         result.append(generateStatisticsLinks());
