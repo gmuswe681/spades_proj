@@ -30,7 +30,8 @@ public class RetrieveOpenGamesController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String retrieveOpenGames()
     {
-        String result = "<!DOCTYPE html><html>\n";
+        String result = "<!DOCTYPE html>\n";
+        result += "<htmllang=\"en\">\n";
         result += "<head><meta charset=\"UTF-8\"/></head>\n";
         result += "<body>\n";
         result += "<h1>Open Games</h1>";

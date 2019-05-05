@@ -47,7 +47,7 @@ public class ViewEndedGamesController {
     public String findEndedGames()
     {
         StringBuilder result = new StringBuilder();
-        result.append("<!DOCTYPE html><html>\n");
+        result.append("<!DOCTYPE html>\n<html lang=\"en\">\n");
         result.append("<head><meta charset=\"UTF-8\"/></head>\n");
         result.append("<body>\n");
         result.append("<h1>List of Ended Games</h1>");
@@ -66,7 +66,7 @@ public class ViewEndedGamesController {
     public String retrieveSpecificGame(@PathVariable int gameid)
     {
         StringBuilder result = new StringBuilder();
-        result.append("<!DOCTYPE html><html>\n");
+        result.append("<!DOCTYPE html>\n<html lang=\"en\">\n");
         result.append("<head><meta charset=\"UTF-8\"/></head>\n");
         result.append("<body>\n");
 

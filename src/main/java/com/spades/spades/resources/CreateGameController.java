@@ -94,16 +94,13 @@ public class CreateGameController {
     private boolean checkUserNotInOpenGames(int userId)
     {
         List<Games> openGames = gamesRepository.findOpenGamesForUser(userId);
-        if(openGames.size() == 0)
-        {
-            return true;
-        }
-        return false;
+        return openGames.size() == 0;
     }
 
     private String generateHtmlResponse(String s)
     {
-        String result = "<!DOCTYPE html>\n<html>\n";
+        String result = "<!DOCTYPE html>\n";
+        result += "<html lang=\"en\">\n";
         result += "<head><meta charset=\"UTF-8\"/></head>\n";
         result += "<body>\n";
 
