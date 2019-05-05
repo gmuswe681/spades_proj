@@ -14,6 +14,7 @@ import com.spades.spades.service.SpadesGameService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,7 +60,7 @@ public class ActiveGameController {
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @RequestMapping(value = "/{gameid}")
-    public String updateGame(@PathVariable int gameid, HttpServletResponse resp)
+    public String updateGame(@PathVariable int gameid, HttpServletRequest req, HttpServletResponse resp)
     {
         // Checks that the game being accessed is valid.
         Optional<Games> foundGame = gamesRepository.findByGameId(gameid);
@@ -119,6 +120,8 @@ public class ActiveGameController {
                 // Renders the current state of the game
                 String response = spadesService.progressGame(gameid);
 
+                CsrfToken token = (CsrfToken) req.getAttribute("_csrf");
+
                 // Renders input fields based on the current state of the game.
                 Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
                 if(currRound.getRoundStatus().equals("b"))
@@ -127,6 +130,7 @@ public class ActiveGameController {
                     response += "<form>";
                     response += "Enter your bid: ";
                     response += "<input id=\"bidAmount\" name=\"bidAmount\" type=\"number\" maxlength=\"2\"></input>";
+                    response += "<input type=\"hidden\" name=\"" + token.getParameterName() + "\" value=\"" + token.getToken() + "\"/>";
                     response += "<button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/game/" + currGame.getGameId() + "/submitBid\">Submit Bid</button>";
                     response += "</form>";
                 }
@@ -136,6 +140,7 @@ public class ActiveGameController {
                     response += "<form>";
                     response += "Enter a card to play: ";
                     response += "<input id=\"card\" name=\"card\" type=\"text\" maxlength=\"4\"></input>";
+                    response += "<input type=\"hidden\" name=\"" + token.getParameterName() + "\" value=\"" + token.getToken() + "\"/>";
                     response += "<button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/game/" + currGame.getGameId() + "/submitCard\">Submit Card</button>";
                     response += "</form>";
                 }

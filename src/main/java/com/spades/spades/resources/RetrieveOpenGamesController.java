@@ -2,12 +2,15 @@ package com.spades.spades.resources;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.spades.spades.model.Games;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.service.GetCurrentPlayerInfoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,14 +31,14 @@ public class RetrieveOpenGamesController {
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public String retrieveOpenGames()
+    public String retrieveOpenGames(HttpServletRequest req)
     {
         String result = "<!DOCTYPE html><html>\n";
         result += "<head><meta charset=\"UTF-8\"/></head>\n";
         result += "<body>\n";
         result += "<h1>Open Games</h1>";
 
-        result += generateOpenGames();
+        result += generateOpenGames(req);
 
         result += "<a href=\"/secured/all\">Go Back</a>\n";
         result += "<a href=\"/logout\">Logout</a>\n";
@@ -44,10 +47,11 @@ public class RetrieveOpenGamesController {
         return result;
     }
 
-    private String generateOpenGames()
+    private String generateOpenGames(HttpServletRequest req)
     {
         List<Games> openGamesList =  gamesRepository.findByGameStatus("o");
 
+        CsrfToken token = (CsrfToken) req.getAttribute("_csrf");
         StringBuilder listResponse = new StringBuilder();
         if(openGamesList.size() > 0)
         {
@@ -61,6 +65,7 @@ public class RetrieveOpenGamesController {
                 listResponse.append("<form>\n");
                 listResponse.append("Spades Game ID#" + g.getGameId());
                 listResponse.append("<input type=\"hidden\" name=\"game_id\" value=\"" + g.getGameId() + "\"/>\n");
+                listResponse.append("<input type=\"hidden\" name=\"" + token.getParameterName() + "\" value=\"" + token.getToken() + "\"/>");
                 listResponse.append("<button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/joingame\">Join Game</button>");
                 listResponse.append("</form>\n");
             }

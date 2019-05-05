@@ -1,6 +1,5 @@
 package com.spades.spades.resources;
 
-
 import com.spades.spades.model.Games;
 import com.spades.spades.repository.GamesRepository;
 import com.spades.spades.service.GetCurrentPlayerInfoService;
@@ -8,11 +7,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RequestMapping("/")
 @RestController
@@ -46,10 +48,11 @@ public class HelloResource {
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/secured/all")
-    public String securedHello()
+    public String securedHello(HttpServletRequest req)
     {
         int playerID1 = currentPlayerInfoService.findPlayerId();
         String buttonOrLink = "";
+        CsrfToken token = (CsrfToken) req.getAttribute("_csrf");
         if(playerID1 >= 0) {
             LOGGER.info(currentPlayerInfoService.findPlayerName() + 
                 " has accessed the application " + System.currentTimeMillis());
@@ -57,7 +60,9 @@ public class HelloResource {
                 int gameId = getUserOpenGames(playerID1);
                 buttonOrLink = "<a href=\"/secured/all/game/" + gameId + "\">Go to Existing Open Game</a>\n";
             } else {
-                buttonOrLink = "<form><button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/creategame\">Create Game</button></form>";
+                buttonOrLink = "<form><button type=\"submit\" formmethod=\"post\" formaction=\"/secured/all/creategame\">Create Game</button>";
+                buttonOrLink += "<input type=\"hidden\" name=\"" + token.getParameterName() + "\" value=\"" + token.getToken() + "\"/>";
+                buttonOrLink += "</form>";
                 buttonOrLink += "<a href=\"/secured/all/retrieveopengames/\">Find Games</a><br/>";
                 buttonOrLink += "<a href=\"/secured/all/viewendedgames\">View Past Games</a><br/>\n";
                 buttonOrLink += "<a href=\"/secured/all/viewwinlossstats\">View User Statistics</a><br/>\n";
