@@ -19,39 +19,39 @@ public class SpadesApplication {
 
     @Configuration
     public class HttpsRedirectConf {
-        private final static String SECURITY_USER_CONSTRAINT = "CONFIDENTIAL";
+        private final static String SEC_USER_CONSTRAINT = "CONFIDENTIAL";
         private final static String REDIRECT_PATTERN = "/*";
-        private final static String CONNECTOR_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
-        private final static String CONNECTOR_SCHEME = "http";
+        private final static String CONN_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
+        private final static String CONN_SCHEME = "http";
 
 
         @Bean
         public TomcatServletWebServerFactory servletContainer() {
-            TomcatServletWebServerFactory tomcat =
+            TomcatServletWebServerFactory tomcatServer =
                     new TomcatServletWebServerFactory() {
 
                         @Override
                         protected void postProcessContext(Context context) {
-                            SecurityConstraint securityConstraint = new SecurityConstraint();
-                            securityConstraint.setUserConstraint(SECURITY_USER_CONSTRAINT);
+                            SecurityConstraint sc = new SecurityConstraint();
+                            sc.setUserConstraint(SEC_USER_CONSTRAINT);
                             SecurityCollection collection = new SecurityCollection();
                             collection.addPattern(REDIRECT_PATTERN);
-                            securityConstraint.addCollection(collection);
-                            context.addConstraint(securityConstraint);
+                            sc.addCollection(collection);
+                            context.addConstraint(sc);
                         }
                     };
-            tomcat.addAdditionalTomcatConnectors(createHttpConnector());
-            return tomcat;
+            tomcatServer.addAdditionalTomcatConnectors(createHttpConnector());
+            return tomcatServer;
         }
 
         private Connector createHttpConnector() {
-            Connector connector =
-                    new Connector(CONNECTOR_PROTOCOL);
-            connector.setScheme(CONNECTOR_SCHEME);
-            connector.setSecure(false);
-            connector.setPort(80);
-            connector.setRedirectPort(443);
-            return connector;
+            Connector conn =
+                    new Connector(CONN_PROTOCOL);
+            conn.setScheme(CONN_SCHEME);
+            conn.setSecure(false);
+            conn.setPort(80);
+            conn.setRedirectPort(443);
+            return conn;
         }
     }
 }
