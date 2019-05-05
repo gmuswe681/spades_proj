@@ -231,7 +231,7 @@ public class ActiveGameController {
                 //Ensures that whatever the user entered it uppercases it
                 String card = req.getParameter("card");
 
-                if(card != null)
+                if(card != null && card.length() <= 4)
                 {
                     card = card.toUpperCase(Locale.US);
                     Rounds currRound = spadesService.getCurrentRoundStatus(gameid);
